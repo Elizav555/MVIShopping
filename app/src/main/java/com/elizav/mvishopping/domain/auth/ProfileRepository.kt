@@ -1,16 +1,12 @@
 package com.elizav.mvishopping.domain.auth
 
-import com.elizav.mvishopping.domain.model.Response
-
-
-typealias SignOutResponse = Response<Boolean>
-typealias RevokeAccessResponse = Response<Boolean>
+import io.reactivex.rxjava3.core.Single
 
 interface ProfileRepository {
     val displayName: String
     val photoUrl: String
 
-    suspend fun signOut(): SignOutResponse
+    fun signOut(): Single<Boolean>
 
-    suspend fun revokeAccess(): RevokeAccessResponse
+    fun revokeAccess(): Single<Boolean>
 }

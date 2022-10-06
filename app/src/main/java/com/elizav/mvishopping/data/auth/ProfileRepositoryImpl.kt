@@ -1,14 +1,13 @@
 package com.elizav.mvishopping.data.auth
 
 import com.elizav.mvishopping.domain.auth.ProfileRepository
-import com.elizav.mvishopping.domain.auth.RevokeAccessResponse
-import com.elizav.mvishopping.domain.auth.SignOutResponse
-import com.elizav.mvishopping.domain.model.Response
 import com.elizav.mvishopping.utils.Constants.USERS
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,27 +21,45 @@ class ProfileRepositoryImpl @Inject constructor(
     override val displayName = auth.currentUser?.displayName.toString()
     override val photoUrl = auth.currentUser?.photoUrl.toString()
 
-    override suspend fun signOut(): SignOutResponse {
-        return try {
-            oneTapClient.signOut()
+    override fun signOut(): Single<Boolean> = Single.create { emitter ->
+        oneTapClient.signOut().addOnSuccessListener {
             auth.signOut()
-            Response.Success(true)
-        } catch (e: Exception) {
-            Response.Failure(e)
+            emitter.onSuccess(true)
+        }.addOnFailureListener {
+            emitter.onError(it)
         }
     }
 
-    override suspend fun revokeAccess(): RevokeAccessResponse {
-        return try {
-            auth.currentUser?.apply {
-                db.collection(USERS).document(uid).delete().doOnNext()
-                signInClient.revokeAccess().await()
-                oneTapClient.signOut().await()
-                delete().await()
+    //TODO ask about this
+    override fun revokeAccess(): Single<Boolean> = Single.create { emitter ->
+        auth.currentUser?.apply {
+            deleteUser(uid).andThen {
+                revoke().andThen {
+                    signOutClient().andThen {
+                        delete().addOnSuccessListener {
+                            emitter.onSuccess(true)
+                        }.addOnFailureListener {
+                            emitter.onError(it)
+                        }
+                    }
+                }
             }
-            Success(true)
-        } catch (e: Exception) {
-            Failure(e)
         }
     }
+
+    private fun deleteUser(uid: String) = Completable.create { emitter ->
+        db.collection(USERS).document(uid).delete().addOnSuccessListener { emitter.onComplete() }
+            .addOnFailureListener { emitter.onError(it) }
+    }
+
+    private fun revoke() = Completable.create { emitter ->
+        signInClient.revokeAccess().addOnSuccessListener { emitter.onComplete() }
+            .addOnFailureListener { emitter.onError(it) }
+    }
+
+    private fun signOutClient() = Completable.create { emitter ->
+        oneTapClient.signOut().addOnSuccessListener { emitter.onComplete() }
+            .addOnFailureListener { emitter.onError(it) }
+    }
 }
+
