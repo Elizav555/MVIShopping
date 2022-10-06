@@ -5,7 +5,7 @@ import com.google.firebase.auth.AuthCredential
 import io.reactivex.rxjava3.core.Single
 
 interface AuthRepository {
-    val isUserAuthenticatedInFirebase: Boolean
+    val isUserAuthenticated: Boolean
 
     fun oneTapSignInWithGoogle(): Single<BeginSignInResult>
 

@@ -1,5 +1,6 @@
 package com.elizav.mvishopping.data.auth
 
+import com.elizav.mvishopping.data.mappers.toUser
 import com.elizav.mvishopping.domain.auth.AuthRepository
 import com.elizav.mvishopping.utils.Constants.CREATED_AT
 import com.elizav.mvishopping.utils.Constants.DISPLAY_NAME
@@ -19,9 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 import javax.inject.Named
-import javax.inject.Singleton
 
-@Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private var oneTapClient: SignInClient,
@@ -31,7 +30,7 @@ class AuthRepositoryImpl @Inject constructor(
     private var signUpRequest: BeginSignInRequest,
     private val db: FirebaseFirestore
 ) : AuthRepository {
-    override val isUserAuthenticatedInFirebase = auth.currentUser != null
+    override val isUserAuthenticated = auth.currentUser != null
 
     override fun oneTapSignInWithGoogle(): Single<BeginSignInResult> = Single.create { emitter ->
         oneTapClient.beginSignIn(signInRequest).addOnSuccessListener {
@@ -65,10 +64,3 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 }
-
-fun FirebaseUser.toUser() = mapOf(
-    DISPLAY_NAME to displayName,
-    EMAIL to email,
-    PHOTO_URL to photoUrl?.toString(),
-    CREATED_AT to serverTimestamp()
-)
