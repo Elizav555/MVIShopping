@@ -1,7 +1,7 @@
 package com.elizav.mvishopping.data.auth
 
 import com.elizav.mvishopping.domain.auth.ProfileRepository
-import com.elizav.mvishopping.utils.Constants.USERS
+import com.elizav.mvishopping.utils.Constants.CLIENTS
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
@@ -46,7 +46,7 @@ class ProfileRepositoryImpl @Inject constructor(
     }
 
     private fun deleteUser(uid: String) = Completable.create { emitter ->
-        db.collection(USERS).document(uid).delete().addOnSuccessListener { emitter.onComplete() }
+        db.collection(CLIENTS).document(uid).delete().addOnSuccessListener { emitter.onComplete() }
             .addOnFailureListener { emitter.onError(it) }
     }
 

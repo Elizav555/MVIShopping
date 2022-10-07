@@ -17,10 +17,9 @@ import com.elizav.mvishopping.ui.auth.state.AuthReducer
 import com.elizav.mvishopping.ui.auth.state.AuthSideEffects
 import com.elizav.mvishopping.ui.auth.state.AuthState
 import com.freeletics.rxredux.reduxStore
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -39,14 +38,16 @@ class AuthFragment : Fragment() {
     @Inject
     lateinit var authSideEffects: AuthSideEffects
 
+    @Inject
+    lateinit var oneTapClient: SignInClient
+
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
             try {
-                val account = task.getResult(ApiException::class.java)!!
-                val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
-                actions.onNext(AuthAction.SignInWithCredAction(credential, account))
+                it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) }
+                    ?: showSnackbar(getString(R.string.error))
             } catch (e: ApiException) {
+                showSnackbar(e.message ?: getString(R.string.error))
                 Log.w("TAG", "Google sign in failed", e)
             }
         }
@@ -84,12 +85,21 @@ class AuthFragment : Fragment() {
         state: AuthState
     ) {
         when {
-            state.isLoading -> showLoading()
-            state.currentClient != null -> navigateToList()
-            state.errorMsg != null -> showSnackbar(state.errorMsg)
-            state.beginSignInResult != null -> launcher.launch(
-                IntentSenderRequest.Builder(state.beginSignInResult.pendingIntent).build()
-            )
+            state.isLoading -> {
+                showLoading()
+            }
+            state.currentClientId != null -> {
+                navigateToList()
+            }
+            state.errorMsg != null -> {
+                showLoading(false)
+                showSnackbar(state.errorMsg)
+            }
+            state.beginSignInResult != null -> {
+                launcher.launch(
+                    IntentSenderRequest.Builder(state.beginSignInResult.pendingIntent).build()
+                )
+            }
         }
     }
 
@@ -97,7 +107,7 @@ class AuthFragment : Fragment() {
         findNavController().navigate(R.id.action_AuthFragment_to_FirstFragment)
     }
 
-    private fun showLoading(isLoading:Boolean = true) {
+    private fun showLoading(isLoading: Boolean = true) {
         binding.btnSignIn.isVisible = !isLoading
         binding.progressBar.isVisible = isLoading
     }

@@ -1,12 +1,10 @@
 package com.elizav.mvishopping.ui.auth.state
 
 import android.content.Context
+import android.content.Intent
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.domain.auth.AuthRepository
-import com.elizav.mvishopping.domain.model.Client
 import com.freeletics.rxredux.SideEffect
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.firebase.auth.AuthCredential
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.schedulers.Schedulers
@@ -35,7 +33,7 @@ class AuthSideEffects @Inject constructor(
             .map<AuthAction> { result ->
                 AuthAction.BeginSignInResultAction(result)
             }
-            .onErrorReturn { error -> AuthAction.ErrorAction(error.message?:"") }
+            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
             .startWith(AuthAction.LoadingAction)
     }
 
@@ -43,23 +41,24 @@ class AuthSideEffects @Inject constructor(
         actions
             .ofType(AuthAction.SignInWithCredAction::class.java)
             .switchMap {
-                signIn(it.googleAuthCredential, it.account)
+                signIn(it.intentData)
             }
     }
 
-    private fun signIn(googleCredential: AuthCredential, account: GoogleSignInAccount): Observable<AuthAction> {
-        return authRepository.firebaseSignInWithGoogle(googleCredential)
+    private fun signIn(intentData: Intent): Observable<AuthAction> {
+        return authRepository.firebaseSignInWithGoogle(intentData)
             .subscribeOn(Schedulers.io())
             .toObservable()
             .map<AuthAction> { result ->
                 if (result) {
-                    AuthAction.SignedInAction(client = Client(account.email?:""))
-                }
-                else{
+                    authRepository.currentClient?.let {
+                        AuthAction.SignedInAction(clientId = it.uid)
+                    } ?: AuthAction.ErrorAction(context.getString(R.string.error))
+                } else {
                     AuthAction.ErrorAction(context.getString(R.string.error))
                 }
             }
-            .onErrorReturn { error -> AuthAction.ErrorAction(error.message?:"") }
+            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
             .startWith(AuthAction.LoadingAction)
     }
 }

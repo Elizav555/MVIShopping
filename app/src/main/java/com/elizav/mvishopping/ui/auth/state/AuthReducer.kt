@@ -10,7 +10,7 @@ class AuthReducer : Reducer<AuthState, AuthAction> {
                 beginSignInResult = action.result,
                 isLoading = false,
                 errorMsg = null
-            ) //TODO launch intent
+            )
             is AuthAction.ErrorAction -> state.copy(
                 errorMsg = action.errorMsg,
                 isLoading = false,
@@ -21,13 +21,17 @@ class AuthReducer : Reducer<AuthState, AuthAction> {
                 errorMsg = null,
                 beginSignInResult = null
             )
-            AuthAction.SignInAction -> state //side effect should handle this action
+            AuthAction.SignInAction -> state
             is AuthAction.SignedInAction -> state.copy(
-                currentClient = action.client,
+                currentClientId = action.clientId,
                 isLoading = false,
                 errorMsg = null,
                 beginSignInResult = null
             )
-            is AuthAction.SignInWithCredAction -> state
+            is AuthAction.SignInWithCredAction -> state.copy(
+                isLoading = true,
+                errorMsg = null,
+                beginSignInResult = null
+            )
         }
 }
