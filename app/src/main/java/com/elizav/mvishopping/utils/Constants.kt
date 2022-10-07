@@ -2,19 +2,12 @@ package com.elizav.mvishopping.utils
 
 object Constants {
     //Collection References
-    const val USERS = "users"
+    const val CLIENTS = "clients"
 
-    //User fields
-    const val DISPLAY_NAME = "displayName"
-    const val EMAIL = "email"
-    const val PHOTO_URL = "photoUrl"
-    const val CREATED_AT = "createdAt"
+    //Client fields
+    const val NAME = "name"
 
     //Names
     const val SIGN_IN_REQUEST = "signInRequest"
     const val SIGN_UP_REQUEST = "signUpRequest"
-
-    //Screens
-    const val AUTH_SCREEN = "Authentication"
-    const val PROFILE_SCREEN = "Profile"
 }
