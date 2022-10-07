@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentAuthBinding
 import com.elizav.mvishopping.ui.auth.state.AuthAction
 import com.elizav.mvishopping.ui.auth.state.AuthReducer
@@ -16,6 +19,7 @@ import com.elizav.mvishopping.ui.auth.state.AuthState
 import com.freeletics.rxredux.reduxStore
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -80,12 +84,27 @@ class AuthFragment : Fragment() {
         state: AuthState
     ) {
         when {
-            state.isLoading -> {}//showLoading()
-            state.currentClient != null -> {}//navigate()
-            state.errorMsg != null -> {}//showError()
+            state.isLoading -> showLoading()
+            state.currentClient != null -> navigateToList()
+            state.errorMsg != null -> showSnackbar(state.errorMsg)
             state.beginSignInResult != null -> launcher.launch(
                 IntentSenderRequest.Builder(state.beginSignInResult.pendingIntent).build()
             )
         }
     }
+
+    private fun navigateToList() {
+        findNavController().navigate(R.id.action_AuthFragment_to_FirstFragment)
+    }
+
+    private fun showLoading(isLoading:Boolean = true) {
+        binding.btnSignIn.isVisible = !isLoading
+        binding.progressBar.isVisible = isLoading
+    }
+
+    private fun showSnackbar(text: String) = Snackbar.make(
+        binding.root,
+        text,
+        Snackbar.LENGTH_LONG
+    ).show()
 }

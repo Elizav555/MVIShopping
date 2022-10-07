@@ -29,5 +29,9 @@
     <fragment
         android:id="@+id/AuthFragment"
         android:name="com.elizav.mvishopping.ui.auth.AuthFragment"
-        android:label="AuthFragment" />
+        android:label="AuthFragment" >
+        <action
+            android:id="@+id/action_AuthFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
 </navigation>

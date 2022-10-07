@@ -44,4 +44,5 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
     <string name="error">Error while google cred sign in</string>
+    <string name="signin_with_google">SignIn with google</string>
 </resources>
