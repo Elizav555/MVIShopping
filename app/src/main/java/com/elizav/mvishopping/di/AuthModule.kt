@@ -3,7 +3,6 @@ package com.elizav.mvishopping.di
 import android.app.Application
 import android.content.Context
 import com.elizav.mvishopping.BuildConfig
-import com.elizav.mvishopping.utils.Constants
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -14,9 +13,7 @@ import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -33,7 +30,7 @@ class AuthModule {
     ) = Identity.getSignInClient(context)
 
     @Provides
-    @Named(Constants.SIGN_IN_REQUEST)
+    @SignInRequest
     fun provideSignInRequest() = BeginSignInRequest.builder()
         .setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
@@ -46,7 +43,7 @@ class AuthModule {
         .build()
 
     @Provides
-    @Named(Constants.SIGN_UP_REQUEST)
+    @SignUpRequest
     fun provideSignUpRequest() = BeginSignInRequest.builder()
         .setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
