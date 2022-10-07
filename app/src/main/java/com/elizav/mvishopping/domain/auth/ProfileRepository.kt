@@ -1,6 +1,6 @@
 package com.elizav.mvishopping.domain.auth
 
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.Single
 
 interface ProfileRepository {
     val displayName: String

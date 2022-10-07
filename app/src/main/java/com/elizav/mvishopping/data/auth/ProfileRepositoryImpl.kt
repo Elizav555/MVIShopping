@@ -6,10 +6,9 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.Completable
+import io.reactivex.Single
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class ProfileRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
