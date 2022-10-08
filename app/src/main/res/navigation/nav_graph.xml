@@ -3,35 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/AuthFragment"
+    app:startDestination="@id/authFragment"
     tools:layout="@layout/fragment_auth">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.elizav.mvishopping.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
-
-        <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.elizav.mvishopping.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
-
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/AuthFragment"
+        android:id="@+id/authFragment"
         android:name="com.elizav.mvishopping.ui.auth.AuthFragment"
-        android:label="AuthFragment" >
+        android:label="@string/auth_fragment_label">
         <action
             android:id="@+id/action_AuthFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            app:destination="@id/products_graph" />
     </fragment>
+    <navigation android:id="@+id/products_graph"
+        app:startDestination="@id/productsListFragment">
+        <fragment
+            android:id="@+id/productsListFragment"
+            android:name="com.elizav.mvishopping.ui.products.ProductsListFragment"
+            android:label="@string/products_list_fragment_label"
+            tools:layout="@layout/fragment_products_list" />
+        <fragment
+            android:id="@+id/cartFragment"
+            android:name="com.elizav.mvishopping.ui.cart.CartFragment"
+            android:label="@string/cart_fragment_label"
+            tools:layout="@layout/fragment_cart" />
+    </navigation>
 </navigation>
