@@ -69,7 +69,7 @@ class AuthFragment : Fragment() {
         )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
-
+//TODO check if user already authenticated
         binding.btnSignIn.setOnClickListener {
             actions.onNext(AuthAction.SignInAction)
         }
@@ -104,7 +104,7 @@ class AuthFragment : Fragment() {
     }
 
     private fun navigateToList() {
-        findNavController().navigate(R.id.action_AuthFragment_to_FirstFragment)
+        findNavController().navigate(R.id.action_authFragment_to_listsHostFragment)
     }
 
     private fun showLoading(isLoading: Boolean = true) {

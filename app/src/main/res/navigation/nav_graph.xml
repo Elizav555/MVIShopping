@@ -11,20 +11,12 @@
         android:name="com.elizav.mvishopping.ui.auth.AuthFragment"
         android:label="@string/auth_fragment_label">
         <action
-            android:id="@+id/action_AuthFragment_to_FirstFragment"
-            app:destination="@id/products_graph" />
+            android:id="@+id/action_authFragment_to_listsHostFragment"
+            app:destination="@id/listsHostFragment" />
     </fragment>
-    <navigation android:id="@+id/products_graph"
-        app:startDestination="@id/productsListFragment">
-        <fragment
-            android:id="@+id/productsListFragment"
-            android:name="com.elizav.mvishopping.ui.products.ProductsListFragment"
-            android:label="@string/products_list_fragment_label"
-            tools:layout="@layout/fragment_products_list" />
-        <fragment
-            android:id="@+id/cartFragment"
-            android:name="com.elizav.mvishopping.ui.cart.CartFragment"
-            android:label="@string/cart_fragment_label"
-            tools:layout="@layout/fragment_cart" />
-    </navigation>
+    <fragment
+        android:id="@+id/listsHostFragment"
+        android:name="com.elizav.mvishopping.ui.lists_host.ListsHostFragment"
+        android:label="fragment_lists_host"
+        tools:layout="@layout/fragment_lists_host" />
 </navigation>
