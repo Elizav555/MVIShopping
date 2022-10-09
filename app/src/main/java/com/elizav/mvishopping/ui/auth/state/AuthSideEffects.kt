@@ -6,7 +6,9 @@ import com.elizav.mvishopping.R
 import com.elizav.mvishopping.domain.auth.AuthRepository
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.rxkotlin.ofType
+import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
@@ -15,9 +17,24 @@ class AuthSideEffects @Inject constructor(
     private val context: Context
 ) {
     val sideEffects = listOf(
+        checkAuthSideEffect(),
         signInSideEffect(),
         signInWithCredSideEffect()
     )
+
+    private fun checkAuthSideEffect(): SideEffect<AuthState, AuthAction> = { actions, state ->
+        actions.ofType<AuthAction.CheckAuthAction>()
+            .switchMap {
+                authRepository.currentClient?.toSingle()
+                    ?.toObservable()
+                    ?.map<AuthAction> { result ->
+                        AuthAction.SignedInAction(result.uid)
+                    }
+                    ?.onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
+                    ?: Single.create { emitter -> emitter.onSuccess(AuthAction.LoadedAction) }
+                        .toObservable()
+            }
+    }
 
     private fun signInSideEffect(): SideEffect<AuthState, AuthAction> = { actions, state ->
         actions.ofType<AuthAction.SignInAction>()
@@ -34,7 +51,6 @@ class AuthSideEffects @Inject constructor(
                 AuthAction.BeginSignInResultAction(result)
             }
             .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
-            .startWith(AuthAction.LoadingAction)
     }
 
     private fun signInWithCredSideEffect(): SideEffect<AuthState, AuthAction> = { actions, state ->
@@ -59,7 +75,6 @@ class AuthSideEffects @Inject constructor(
                 }
             }
             .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
-            .startWith(AuthAction.LoadingAction)
     }
 }
 

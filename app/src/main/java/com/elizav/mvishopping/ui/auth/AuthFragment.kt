@@ -3,22 +3,15 @@ package com.elizav.mvishopping.ui.auth
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentAuthBinding
-import com.elizav.mvishopping.ui.MainActivity
 import com.elizav.mvishopping.ui.auth.state.AuthAction
 import com.elizav.mvishopping.ui.auth.state.AuthReducer
 import com.elizav.mvishopping.ui.auth.state.AuthSideEffects
@@ -76,7 +69,7 @@ class AuthFragment : Fragment() {
         )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
-//TODO check if user already authenticated
+        actions.onNext(AuthAction.CheckAuthAction)
         binding.btnSignIn.setOnClickListener {
             actions.onNext(AuthAction.SignInAction)
         }
@@ -91,10 +84,8 @@ class AuthFragment : Fragment() {
     private fun render(
         state: AuthState
     ) {
+        showLoading(state.isLoading)
         when {
-            state.isLoading -> {
-                showLoading()
-            }
             state.currentClientId != null -> {
                 navigateToList()
             }

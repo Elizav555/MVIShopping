@@ -8,7 +8,7 @@ class AuthReducer : Reducer<AuthState, AuthAction> {
         when (action) {
             is AuthAction.BeginSignInResultAction -> state.copy(
                 beginSignInResult = action.result,
-                isLoading = false,
+                isLoading = true,
                 errorMsg = null
             )
             is AuthAction.ErrorAction -> state.copy(
@@ -16,12 +16,9 @@ class AuthReducer : Reducer<AuthState, AuthAction> {
                 isLoading = false,
                 beginSignInResult = null
             )
-            AuthAction.LoadingAction -> state.copy(
-                isLoading = true,
-                errorMsg = null,
-                beginSignInResult = null
+            AuthAction.SignInAction -> state.copy(
+                isLoading = true
             )
-            AuthAction.SignInAction -> state
             is AuthAction.SignedInAction -> state.copy(
                 currentClientId = action.clientId,
                 isLoading = false,
@@ -30,6 +27,16 @@ class AuthReducer : Reducer<AuthState, AuthAction> {
             )
             is AuthAction.SignInWithCredAction -> state.copy(
                 isLoading = true,
+                errorMsg = null,
+                beginSignInResult = null
+            )
+            AuthAction.CheckAuthAction -> state.copy(
+                isLoading = true,
+                errorMsg = null,
+                beginSignInResult = null
+            )
+            AuthAction.LoadedAction -> state.copy(
+                isLoading = false,
                 errorMsg = null,
                 beginSignInResult = null
             )
