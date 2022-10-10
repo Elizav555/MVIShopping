@@ -8,6 +8,7 @@ import io.reactivex.Single
 interface ClientsRepository {
     fun getAllClients(): Single<List<Client>>
     fun observeClients(): Observable<List<Client>>
+    fun getClient(clientId: String): Single<Client>
     fun addClient(client: Client): Single<Boolean>
     fun deleteClient(clientId: String): Single<Boolean>
     fun updateProducts(clientId: String, products: List<Product>): Single<Boolean>

@@ -45,6 +45,16 @@ class ClientsRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getClient(clientId: String): Single<Client> {
+        return Single.create { emitter ->
+            clientsCollection.document(clientId).get().addOnSuccessListener { result ->
+                result.toObject(ClientData::class.java)?.let { emitter.onSuccess(it.toDomain()) }
+            }.addOnFailureListener { e ->
+                emitter.onError(e)
+            }
+        }
+    }
+
     override fun addClient(client: Client): Single<Boolean> = Single.create { emitter ->
         clientsCollection.document(client.id).set(client.toData())
             .addOnSuccessListener {
