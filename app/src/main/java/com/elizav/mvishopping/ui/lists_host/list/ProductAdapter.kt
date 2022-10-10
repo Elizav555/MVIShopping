@@ -7,7 +7,6 @@ import com.elizav.mvishopping.databinding.ItemProductBinding
 import com.elizav.mvishopping.domain.model.Product
 
 class ProductAdapter(
-    private val action: (position: Int) -> Unit,
     private val checkedFunc: ((position: Int) -> Unit)?,
 ) : ListAdapter<Product, ProductHolder>(ProductDiffUtilCallback()) {
 
@@ -20,7 +19,6 @@ class ProductAdapter(
             parent,
             false
         ),
-        action = action,
         checkedFunc = checkedFunc
     )
 
