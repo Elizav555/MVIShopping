@@ -14,7 +14,7 @@ class HostReducer : Reducer<HostState, HostAction> {
                 errorMsg = action.errorMsg,
                 isSuccess = false
             )
-            HostAction.SuccessAction -> state.copy(
+            HostAction.SuccessLogoutAction -> state.copy(
                 errorMsg = null,
                 isSuccess = true
             )

@@ -19,7 +19,7 @@ class HostSideEffects @Inject constructor(
                 authRepository.signOut()
                     .toObservable()
                     ?.map<HostAction> {
-                        HostAction.SuccessAction
+                        HostAction.SuccessLogoutAction
                     }
                     ?.onErrorReturn { error -> HostAction.ErrorAction(error.message ?: "") }
             }
@@ -28,7 +28,7 @@ class HostSideEffects @Inject constructor(
     private fun logoutObserveSideEffect(): SideEffect<HostState, HostAction> = { actions, state ->
         authRepository.observeAuthState().filter { !it }
             .map<HostAction> {
-            HostAction.SuccessAction
+            HostAction.SuccessLogoutAction
         }
     }
 }
