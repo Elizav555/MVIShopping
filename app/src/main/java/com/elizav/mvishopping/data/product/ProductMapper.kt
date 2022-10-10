@@ -1,17 +1,16 @@
-package com.elizav.mvishopping.data.mappers
+package com.elizav.mvishopping.data.product
 
 import com.elizav.mvishopping.domain.model.Product
-import com.elizav.mvishopping.data.model.Product as ProductData
+import com.elizav.mvishopping.data.product.Product as ProductData
 
 object ProductMapper {
-    fun ProductData.toDomain() = Product(
+    fun ProductData.toDomain(id:Int) = Product(
         id = id,
         name = name,
         isPurchased = isPurchased
     )
 
     fun Product.toData() = ProductData(
-        id = id,
         name = name,
         isPurchased = isPurchased
     )
