@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Client(
-    @SerialName("id") val id: String,
-    @SerialName("name") val name: String,
-    @SerialName("cart") val cart: List<Int>,
-    @SerialName("products") val products: List<Product>,
+    @SerialName("id") val id: String = "",
+    @SerialName("name") val name: String="",
+    @SerialName("cart") val cart: List<Int> = emptyList(),
+    @SerialName("products") val products: List<Product> = emptyList(),
 )
