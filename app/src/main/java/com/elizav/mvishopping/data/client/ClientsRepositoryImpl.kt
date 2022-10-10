@@ -1,7 +1,7 @@
 package com.elizav.mvishopping.data.client
 
-import com.elizav.mvishopping.data.mappers.ClientMapper.toData
-import com.elizav.mvishopping.data.mappers.ClientMapper.toDomain
+import com.elizav.mvishopping.data.client.ClientMapper.toData
+import com.elizav.mvishopping.data.client.ClientMapper.toDomain
 import com.elizav.mvishopping.domain.client.ClientsRepository
 import com.elizav.mvishopping.domain.model.Client
 import com.elizav.mvishopping.domain.model.Product
@@ -10,20 +10,24 @@ import com.elizav.mvishopping.utils.Constants.CART
 import com.elizav.mvishopping.utils.Constants.NAME
 import com.elizav.mvishopping.utils.Constants.PRODUCTS
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
-import com.elizav.mvishopping.data.model.Client as ClientData
+import com.elizav.mvishopping.data.client.Client as ClientData
 
 class ClientsRepositoryImpl @Inject constructor(
-    private val db: FirebaseFirestore
+    db: FirebaseFirestore,
 ) : ClientsRepository {
     private val clientsCollection = db.collection(Constants.CLIENTS)
 
     override fun getAllClients(): Single<List<Client>> {
         return Single.create { emitter ->
             clientsCollection.get().addOnSuccessListener { result ->
-                emitter.onSuccess(result.toObjects(ClientData::class.java).map { it.toDomain() })
+                emitter.onSuccess(
+                    result.documents.mapNotNull { documentSnapshot ->
+                        documentSnapshot.toObject<ClientData>()?.toDomain(documentSnapshot.id)
+                    })
             }.addOnFailureListener { e ->
                 emitter.onError(e)
             }
@@ -36,9 +40,12 @@ class ClientsRepositoryImpl @Inject constructor(
                 if (error != null) {
                     emitter.onError(error)
                 } else {
-                    snapshot?.let { querySnapshot ->
+                    snapshot?.let { result ->
                         emitter.onNext(
-                            querySnapshot.toObjects(ClientData::class.java).map { it.toDomain() })
+                            result.documents.mapNotNull { documentSnapshot ->
+                                documentSnapshot.toObject<ClientData>()
+                                    ?.toDomain(documentSnapshot.id)
+                            })
                     } ?: emitter.onError(Exception())
                 }
             }
@@ -47,8 +54,8 @@ class ClientsRepositoryImpl @Inject constructor(
 
     override fun getClient(clientId: String): Single<Client> {
         return Single.create { emitter ->
-            clientsCollection.document(clientId).get().addOnSuccessListener { result ->
-                result.toObject(ClientData::class.java)?.let { emitter.onSuccess(it.toDomain()) }
+            clientsCollection.document(clientId).get().addOnSuccessListener { documentSnapshot ->
+                documentSnapshot.toObject<ClientData>()?.toDomain(documentSnapshot.id)
             }.addOnFailureListener { e ->
                 emitter.onError(e)
             }
