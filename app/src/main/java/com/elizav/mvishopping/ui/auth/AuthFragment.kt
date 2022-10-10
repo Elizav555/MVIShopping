@@ -17,7 +17,6 @@ import com.elizav.mvishopping.ui.auth.state.AuthReducer
 import com.elizav.mvishopping.ui.auth.state.AuthSideEffects
 import com.elizav.mvishopping.ui.auth.state.AuthState
 import com.freeletics.rxredux.reduxStore
-import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,7 +82,7 @@ class AuthFragment : Fragment() {
         showLoading(state.isLoading)
         when {
             state.currentClientId != null -> {
-                navigateToList()
+                navigateToList(state.currentClientId)
             }
             state.errorMsg != null -> {
                 showLoading(false)
@@ -97,9 +96,9 @@ class AuthFragment : Fragment() {
         }
     }
 
-    private fun navigateToList() {
+    private fun navigateToList(clientId: String) {
         findNavController().navigate(
-            AuthFragmentDirections.actionAuthFragmentToListsHostFragment()
+            AuthFragmentDirections.actionAuthFragmentToListsHostFragment(clientId)
         )
     }
 

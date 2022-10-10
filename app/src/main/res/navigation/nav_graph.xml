@@ -12,13 +12,11 @@
         android:label="@string/auth_fragment_label">
         <action
             android:id="@+id/action_authFragment_to_listsHostFragment"
-            app:destination="@id/navigation"
+            app:destination="@id/listsHostFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
-    <navigation
-        android:id="@+id/navigation"
-        app:startDestination="@id/listsHostFragment">
+
         <fragment
             android:id="@+id/listsHostFragment"
             android:name="com.elizav.mvishopping.ui.lists_host.ListsHostFragment"
@@ -27,12 +25,10 @@
             <action
                 android:id="@+id/action_listsHostFragment_to_authFragment"
                 app:destination="@id/authFragment"
-                app:popUpTo="@id/navigation"
+                app:popUpTo="@id/listsHostFragment"
                 app:popUpToInclusive="true" />
             <argument
                 android:name="clientId"
                 app:argType="string" />
         </fragment>
-
-    </navigation>
 </navigation>
