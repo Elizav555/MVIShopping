@@ -9,7 +9,8 @@ class HostSideEffects @Inject constructor(
     private val authRepository: AuthRepository
 ) {
     val sideEffects = listOf(
-        logoutSideEffect()
+        logoutSideEffect(),
+        logoutObserveSideEffect()
     )
 
     private fun logoutSideEffect(): SideEffect<HostState, HostAction> = { actions, state ->
@@ -22,6 +23,13 @@ class HostSideEffects @Inject constructor(
                     }
                     ?.onErrorReturn { error -> HostAction.ErrorAction(error.message ?: "") }
             }
+    }
+
+    private fun logoutObserveSideEffect(): SideEffect<HostState, HostAction> = { actions, state ->
+        authRepository.observeAuthState().filter { !it }
+            .map<HostAction> {
+            HostAction.SuccessAction
+        }
     }
 }
 

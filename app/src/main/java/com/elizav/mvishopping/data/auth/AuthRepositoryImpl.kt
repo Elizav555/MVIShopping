@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -27,6 +28,21 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
     override val currentClient: FirebaseUser? get() = auth.currentUser
     override val isUserAuthenticated get() = auth.currentUser != null
+
+    private var authStateListener: FirebaseAuth.AuthStateListener? = null
+
+    override fun observeAuthState(): Observable<Boolean> {
+        return Observable.create<Boolean> { emitter ->
+            authStateListener = FirebaseAuth.AuthStateListener {
+                if (!emitter.isDisposed) emitter.onNext(it.currentUser != null)
+            }.apply {
+                auth.addAuthStateListener(this)
+                emitter.setCancellable {
+                    auth.removeAuthStateListener(this)
+                }
+            }
+        }
+    }
 
     override fun oneTapSignInWithGoogle(): Single<BeginSignInResult> = Single.create { emitter ->
         oneTapClient.beginSignIn(signInRequest).addOnSuccessListener {
@@ -67,6 +83,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun signOut(): Single<Boolean> = Single.create { emitter ->
         oneTapClient.signOut().addOnSuccessListener {
+            authStateListener?.let { auth.removeAuthStateListener(it) }
             auth.signOut()
             emitter.onSuccess(true)
         }.addOnFailureListener {
