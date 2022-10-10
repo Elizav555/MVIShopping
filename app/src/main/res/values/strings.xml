@@ -10,7 +10,7 @@
     <string name="signin_with_google">SignIn with google</string>
     <string name="product_name">Product name</string>
     <string name="tab_layout">Tab layout</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="logout">Logout</string>
+    <string name="tv_empty_text">Ups, there are no products</string>
+    <string name="add_product">Add product</string>
 </resources>
