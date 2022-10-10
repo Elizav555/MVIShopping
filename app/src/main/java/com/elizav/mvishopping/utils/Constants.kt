@@ -6,4 +6,6 @@ object Constants {
 
     //Client fields
     const val NAME = "name"
+    const val PRODUCTS = "products"
+    const val CART = "cart"
 }
