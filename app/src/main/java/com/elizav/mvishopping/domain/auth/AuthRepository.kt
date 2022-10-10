@@ -12,5 +12,7 @@ interface AuthRepository {
 
     fun oneTapSignInWithGoogle(): Single<BeginSignInResult>
 
-    fun firebaseSignInWithGoogle(intentData: Intent): Single<Boolean>
+    fun firebaseSignInWithGoogle(intentData: Intent): Single<FirebaseUser>
+
+    fun signOut(): Single<Boolean>
 }

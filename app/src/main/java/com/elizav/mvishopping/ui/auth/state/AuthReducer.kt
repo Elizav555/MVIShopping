@@ -21,7 +21,7 @@ class AuthReducer : Reducer<AuthState, AuthAction> {
             )
             is AuthAction.SignedInAction -> state.copy(
                 currentClientId = action.clientId,
-                isLoading = false,
+                isLoading = true,
                 errorMsg = null,
                 beginSignInResult = null
             )

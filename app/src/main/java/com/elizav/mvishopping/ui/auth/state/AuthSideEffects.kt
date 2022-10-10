@@ -2,7 +2,6 @@ package com.elizav.mvishopping.ui.auth.state
 
 import android.content.Context
 import android.content.Intent
-import com.elizav.mvishopping.R
 import com.elizav.mvishopping.domain.auth.AuthRepository
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
@@ -14,7 +13,6 @@ import javax.inject.Inject
 
 class AuthSideEffects @Inject constructor(
     private val authRepository: AuthRepository,
-    private val context: Context
 ) {
     val sideEffects = listOf(
         checkAuthSideEffect(),
@@ -66,13 +64,7 @@ class AuthSideEffects @Inject constructor(
             .subscribeOn(Schedulers.io())
             .toObservable()
             .map<AuthAction> { result ->
-                if (result) {
-                    authRepository.currentClient?.let {
-                        AuthAction.SignedInAction(clientId = it.uid)
-                    } ?: AuthAction.ErrorAction(context.getString(R.string.error))
-                } else {
-                    AuthAction.ErrorAction(context.getString(R.string.error))
-                }
+                AuthAction.SignedInAction(clientId = result.uid)
             }
             .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
     }

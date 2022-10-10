@@ -25,8 +25,8 @@ class AuthRepositoryImpl @Inject constructor(
     private var signUpRequest: BeginSignInRequest,
     private val db: FirebaseFirestore
 ) : AuthRepository {
-    override val currentClient: FirebaseUser? = auth.currentUser
-    override val isUserAuthenticated = auth.currentUser != null
+    override val currentClient: FirebaseUser? get() = auth.currentUser
+    override val isUserAuthenticated get() = auth.currentUser != null
 
     override fun oneTapSignInWithGoogle(): Single<BeginSignInResult> = Single.create { emitter ->
         oneTapClient.beginSignIn(signInRequest).addOnSuccessListener {
@@ -42,7 +42,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun firebaseSignInWithGoogle(
         intentData: Intent
-    ): Single<Boolean> = Single.create { emitter ->
+    ): Single<FirebaseUser> = Single.create { emitter ->
         val credential = oneTapClient.getSignInCredentialFromIntent(intentData)
         credential.googleIdToken?.let { idToken ->
             val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
@@ -52,15 +52,25 @@ class AuthRepositoryImpl @Inject constructor(
                     auth.currentUser?.apply {
                         db.collection(CLIENTS).document(uid).set(mapOf(NAME to displayName))
                             .addOnSuccessListener {
-                                emitter.onSuccess(true)
+                                emitter.onSuccess(this)
                             }.addOnFailureListener { ex ->
                                 emitter.onError(ex)
                             }
                     }
-                } else emitter.onSuccess(true)
+                } else auth.currentUser?.let { emitter.onSuccess(it) }
+                    ?: emitter.onError(Exception())
             }.addOnFailureListener {
                 emitter.onError(it)
             }
         } ?: emitter.onError(Exception())
+    }
+
+    override fun signOut(): Single<Boolean> = Single.create { emitter ->
+        oneTapClient.signOut().addOnSuccessListener {
+            auth.signOut()
+            emitter.onSuccess(true)
+        }.addOnFailureListener {
+            emitter.onError(it)
+        }
     }
 }

@@ -38,14 +38,10 @@ class AuthFragment : Fragment() {
     @Inject
     lateinit var authSideEffects: AuthSideEffects
 
-    @Inject
-    lateinit var oneTapClient: SignInClient
-
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             try {
-                it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) }
-                    ?: showSnackbar(getString(R.string.error))
+                it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) } ?: showSnackbar(getString(R.string.error))
             } catch (e: ApiException) {
                 showSnackbar(e.message ?: getString(R.string.error))
                 Log.w("TAG", "Google sign in failed", e)
