@@ -7,26 +7,19 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.IntentSenderRequest
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager2.widget.ViewPager2
+import androidx.navigation.fragment.navArgs
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentListsHostBinding
-import com.elizav.mvishopping.ui.auth.AuthFragmentDirections
-import com.elizav.mvishopping.ui.auth.state.AuthAction
-import com.elizav.mvishopping.ui.auth.state.AuthReducer
-import com.elizav.mvishopping.ui.auth.state.AuthSideEffects
-import com.elizav.mvishopping.ui.auth.state.AuthState
 import com.elizav.mvishopping.ui.lists_host.state.HostAction
 import com.elizav.mvishopping.ui.lists_host.state.HostReducer
 import com.elizav.mvishopping.ui.lists_host.state.HostSideEffects
 import com.elizav.mvishopping.ui.lists_host.state.HostState
-import com.elizav.mvishopping.utils.fragmentsCollection
+import com.elizav.mvishopping.utils.getFragmentsCollection
 import com.freeletics.rxredux.reduxStore
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -45,6 +38,8 @@ class ListsHostFragment : Fragment() {
     private val actions = BehaviorSubject.create<HostAction>()
     private val compositeDisposable = CompositeDisposable()
 
+    private val args: ListsHostFragmentArgs by navArgs()
+
     @Inject
     lateinit var hostSideEffects: HostSideEffects
 
@@ -59,12 +54,13 @@ class ListsHostFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        listsAdapter = ListsAdapter(this)
+        listsAdapter = ListsAdapter(this, args.clientId)
         binding.viewPager.adapter = listsAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             val fragmentParams =
-                fragmentsCollection.getOrNull(position) ?: throw IllegalArgumentException()
+                getFragmentsCollection(args.clientId).getOrNull(position)
+                    ?: throw IllegalArgumentException()
             tab.text = getString(fragmentParams.labelRes)
             tab.icon = ResourcesCompat.getDrawable(resources, fragmentParams.iconRes, null)
         }.attach()
@@ -86,9 +82,8 @@ class ListsHostFragment : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_sort -> true
-                    R.id.action_logout-> {
+                    R.id.action_logout -> {
                         //TODO ask before
-                        //TODO cache not deleting
                         actions.onNext(HostAction.LogoutAction)
                         return true
                     }

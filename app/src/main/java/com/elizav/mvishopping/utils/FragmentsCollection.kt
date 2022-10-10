@@ -7,16 +7,16 @@ import com.elizav.mvishopping.R
 import com.elizav.mvishopping.ui.cart.CartFragment
 import com.elizav.mvishopping.ui.products.ProductsListFragment
 
-val fragmentsCollection = listOf(
+fun getFragmentsCollection(clientId: String) = listOf(
     FragmentParams(
         R.string.products_list_fragment_label,
         R.drawable.ic_baseline_list_24,
-        ProductsListFragment()
+        ProductsListFragment(clientId)
     ),
     FragmentParams(
         R.string.cart_fragment_label,
         R.drawable.ic_baseline_shopping_cart_24,
-        CartFragment()
+        CartFragment(clientId)
     ),
 )
 
