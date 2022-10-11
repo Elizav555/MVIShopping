@@ -16,7 +16,7 @@ class ProductHolder(
             tvProductName.text = product.name
             checkBoxIsPurchased.isChecked = product.isPurchased
             checkBoxIsPurchased.isVisible = !isCart
-            ivFilter.isVisible == !isCart && product.isPurchased
+            ivFilter.isVisible = !isCart && product.isPurchased
         }
     }
 }
