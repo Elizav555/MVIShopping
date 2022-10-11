@@ -13,6 +13,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.viewpager2.widget.ViewPager2
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentListsHostBinding
 import com.elizav.mvishopping.ui.lists_host.state.HostAction
@@ -39,12 +40,27 @@ class ListsHostFragment : Fragment() {
     private val compositeDisposable = CompositeDisposable()
 
     private val args: ListsHostFragmentArgs by navArgs()
-    //private var currentFragment: BaseListFragment? = null
+    private var sortItem: MenuItem? = null
 
     @Inject
     lateinit var hostSideEffects: HostSideEffects
 
     private lateinit var listsAdapter: ListsAdapter
+    private val onPageChangeListenerCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+//            val currentFragment = childFragmentManager
+//                .findFragmentById(listsAdapter.getItemId(position).toInt()) as BaseListFragment?
+//            currentFragment?.let {
+//                sortItem?.icon = ResourcesCompat.getDrawable(
+//                    resources,
+//                    getSortIconResId(currentFragment.isDesc),
+//                    null
+//                )
+//            }
+            //TODO think
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,21 +74,7 @@ class ListsHostFragment : Fragment() {
         listsAdapter = ListsAdapter(this, args.clientId)
         binding.viewPager.apply {
             adapter = listsAdapter
-//            val onPageChangeListenerCallback = object : ViewPager2.OnPageChangeCallback() {
-//                override fun onPageSelected(position: Int) {
-//                    super.onPageSelected(position)
-//                    currentFragment = getFragmentsCollection().getOrNull(position)?.listFragment
-//                    currentFragment?.let {
-//                        view.findViewById<MaterialToolbar>(R.id.toolbar)
-//                            .menu.findItem(R.id.action_sort).icon = ResourcesCompat.getDrawable(
-//                            resources,
-//                            getSortIconResId(it.isDesc),
-//                            null
-//                        )
-//                    }
-//                }
-//            }
-//            registerOnPageChangeCallback(onPageChangeListenerCallback)
+            registerOnPageChangeCallback(onPageChangeListenerCallback)
         }
 
 
@@ -96,13 +98,14 @@ class ListsHostFragment : Fragment() {
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_main, menu)
+                sortItem = menu.findItem(R.id.action_sort)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_sort -> {
                         val currentFragment = childFragmentManager.fragments
-                            .find { it is BaseListFragment && it.isResumed } as BaseListFragment
+                            .find { it is BaseListFragment && it.isResumed } as BaseListFragment?
                         currentFragment?.apply {
                             isDesc = !isDesc
                             sortList(getCurrentProducts(), isDesc)
@@ -128,6 +131,7 @@ class ListsHostFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.viewPager.unregisterOnPageChangeCallback(onPageChangeListenerCallback)
         _binding = null
         compositeDisposable.clear()
     }
