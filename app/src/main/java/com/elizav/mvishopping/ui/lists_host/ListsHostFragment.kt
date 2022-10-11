@@ -39,6 +39,7 @@ class ListsHostFragment : Fragment() {
     private val compositeDisposable = CompositeDisposable()
 
     private val args: ListsHostFragmentArgs by navArgs()
+    private var currentPos = 0
 
     @Inject
     lateinit var hostSideEffects: HostSideEffects
@@ -81,7 +82,13 @@ class ListsHostFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.action_sort -> true
+                    R.id.action_sort -> {
+                        //TODO
+                        val currentFragment = childFragmentManager.fragments
+                            .find { it is BaseListFragment && it.isResumed } as BaseListFragment
+                        currentFragment.sortList()
+                        return true
+                    }
                     R.id.action_logout -> {
                         //TODO ask before
                         actions.onNext(HostAction.LogoutAction)
