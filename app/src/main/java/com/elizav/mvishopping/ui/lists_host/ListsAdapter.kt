@@ -6,11 +6,13 @@ import com.elizav.mvishopping.utils.getFragmentsCollection
 
 class ListsAdapter(fragment: Fragment, private val clientId: String) :
     FragmentStateAdapter(fragment) {
-
+    val fragments = mutableListOf<BaseListFragment>()
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment {
-        return getFragmentsCollection(clientId = clientId).getOrNull(position)?.listFragment
+        val fragment = getFragmentsCollection(clientId = clientId).getOrNull(position)?.listFragment
             ?: throw IllegalArgumentException()
+        fragments.add(fragment)
+        return fragment
     }
 }

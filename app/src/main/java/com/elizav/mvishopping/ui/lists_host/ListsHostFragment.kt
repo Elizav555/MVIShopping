@@ -49,16 +49,14 @@ class ListsHostFragment : Fragment() {
     private val onPageChangeListenerCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
-//            val currentFragment = childFragmentManager
-//                .findFragmentById(listsAdapter.getItemId(position).toInt()) as BaseListFragment?
-//            currentFragment?.let {
-//                sortItem?.icon = ResourcesCompat.getDrawable(
-//                    resources,
-//                    getSortIconResId(currentFragment.isDesc),
-//                    null
-//                )
-//            }
-            //TODO think
+            val currentFragment =
+                listsAdapter.fragments.getOrNull(position)
+                val isDesc = currentFragment?.isDesc?:false
+                sortItem?.icon = ResourcesCompat.getDrawable(
+                    resources,
+                    getSortIconResId(isDesc),
+                    null
+                )
         }
     }
 
