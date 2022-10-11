@@ -12,8 +12,12 @@ import com.elizav.mvishopping.ui.lists_host.list.ProductAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 
-open class BaseListFragment(private val clientId: String) : Fragment() {
+abstract class BaseListFragment(private val clientId: String) : Fragment() {
     open lateinit var productsAdapter: ProductAdapter
+
+    //TODO swipe to refresh
+    abstract fun getCurrentProducts(): List<Product>
+    abstract var isDesc: Boolean
 
     open fun showLoading(isLoading: Boolean = true) {
         view?.apply {
@@ -50,7 +54,12 @@ open class BaseListFragment(private val clientId: String) : Fragment() {
         it.findViewById<TextView>(R.id.tv_empty).isVisible = products.isEmpty()
     }
 
-    open fun sortList() {
-        //TODO
+    open fun sortList(products: List<Product>, isDescending: Boolean) {
+        productsAdapter.submitList(if (isDescending) {
+            products.sortedByDescending { it.name }
+        } else {
+            products.sortedBy { it.name }
+        }
+        )
     }
 }

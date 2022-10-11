@@ -25,7 +25,7 @@ class CartSideEffects @Inject constructor(
             .map<CartAction> { products ->
                 CartAction.LoadedAction(products.filter {
                     it.isPurchased
-                })
+                }.sortedBy { it.name })
             }.onErrorReturn { error ->
                 CartAction.ErrorAction(
                     error.message ?: ""

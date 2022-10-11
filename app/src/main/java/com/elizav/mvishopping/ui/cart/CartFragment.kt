@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.elizav.mvishopping.databinding.FragmentCartBinding
+import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.ui.cart.state.CartAction
 import com.elizav.mvishopping.ui.cart.state.CartReducer
 import com.elizav.mvishopping.ui.cart.state.CartSideEffects
@@ -28,6 +29,14 @@ class CartFragment(private val clientId: String) : BaseListFragment(clientId) {
 
     @Inject
     lateinit var cartSideEffects: CartSideEffects
+
+    private var currentProducts: List<Product> = emptyList()
+
+    override fun getCurrentProducts(): List<Product> {
+        return currentProducts
+    }
+
+    override var isDesc: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,6 +71,7 @@ class CartFragment(private val clientId: String) : BaseListFragment(clientId) {
         showLoading(state.isLoading)
         when {
             state.products != null -> {
+                currentProducts = state.products
                 updateList(state.products)
             }
             state.errorMsg != null -> {

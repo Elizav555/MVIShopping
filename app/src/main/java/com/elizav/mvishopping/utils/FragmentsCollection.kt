@@ -2,9 +2,9 @@ package com.elizav.mvishopping.utils
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.fragment.app.Fragment
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.ui.cart.CartFragment
+import com.elizav.mvishopping.ui.lists_host.BaseListFragment
 import com.elizav.mvishopping.ui.products.ProductsListFragment
 
 fun getFragmentsCollection(clientId: String) = listOf(
@@ -23,5 +23,5 @@ fun getFragmentsCollection(clientId: String) = listOf(
 data class FragmentParams(
     @StringRes val labelRes: Int,
     @DrawableRes val iconRes: Int,
-    val fragment: Fragment
+    val listFragment: BaseListFragment
 )

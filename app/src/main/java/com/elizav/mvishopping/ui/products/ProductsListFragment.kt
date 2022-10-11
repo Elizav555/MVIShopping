@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.elizav.mvishopping.databinding.FragmentProductsListBinding
+import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.ui.lists_host.BaseListFragment
 import com.elizav.mvishopping.ui.products.state.ProductsListAction
 import com.elizav.mvishopping.ui.products.state.ProductsListReducer
@@ -25,6 +26,14 @@ class ProductsListFragment(private val clientId: String) : BaseListFragment(clie
 
     private val actions = BehaviorSubject.create<ProductsListAction>()
     private val compositeDisposable = CompositeDisposable()
+
+    private var currentProducts: List<Product> = emptyList()
+
+    override fun getCurrentProducts(): List<Product> {
+        return currentProducts
+    }
+
+    override var isDesc: Boolean = false
 
     @Inject
     lateinit var productsListSideEffects: ProductsListSideEffects
@@ -62,6 +71,7 @@ class ProductsListFragment(private val clientId: String) : BaseListFragment(clie
         showLoading(state.isLoading)
         when {
             state.products != null -> {
+                currentProducts = state.products
                 updateList(state.products)
             }
             state.errorMsg != null -> {

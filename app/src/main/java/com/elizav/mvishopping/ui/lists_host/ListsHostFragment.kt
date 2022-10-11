@@ -39,7 +39,7 @@ class ListsHostFragment : Fragment() {
     private val compositeDisposable = CompositeDisposable()
 
     private val args: ListsHostFragmentArgs by navArgs()
-    private var currentPos = 0
+    //private var currentFragment: BaseListFragment? = null
 
     @Inject
     lateinit var hostSideEffects: HostSideEffects
@@ -56,7 +56,25 @@ class ListsHostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         listsAdapter = ListsAdapter(this, args.clientId)
-        binding.viewPager.adapter = listsAdapter
+        binding.viewPager.apply {
+            adapter = listsAdapter
+//            val onPageChangeListenerCallback = object : ViewPager2.OnPageChangeCallback() {
+//                override fun onPageSelected(position: Int) {
+//                    super.onPageSelected(position)
+//                    currentFragment = getFragmentsCollection().getOrNull(position)?.listFragment
+//                    currentFragment?.let {
+//                        view.findViewById<MaterialToolbar>(R.id.toolbar)
+//                            .menu.findItem(R.id.action_sort).icon = ResourcesCompat.getDrawable(
+//                            resources,
+//                            getSortIconResId(it.isDesc),
+//                            null
+//                        )
+//                    }
+//                }
+//            }
+//            registerOnPageChangeCallback(onPageChangeListenerCallback)
+        }
+
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             val fragmentParams =
@@ -83,10 +101,17 @@ class ListsHostFragment : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_sort -> {
-                        //TODO
                         val currentFragment = childFragmentManager.fragments
                             .find { it is BaseListFragment && it.isResumed } as BaseListFragment
-                        currentFragment.sortList()
+                        currentFragment?.apply {
+                            isDesc = !isDesc
+                            sortList(getCurrentProducts(), isDesc)
+                            menuItem.icon = ResourcesCompat.getDrawable(
+                                resources,
+                                getSortIconResId(isDesc),
+                                null
+                            )
+                        }
                         return true
                     }
                     R.id.action_logout -> {
@@ -112,7 +137,7 @@ class ListsHostFragment : Fragment() {
     ) {
         when {
             state.isSuccess -> {
-                navigateToList()
+                navigateToAuth()
             }
             state.errorMsg != null -> {
                 showSnackbar(state.errorMsg)
@@ -120,7 +145,7 @@ class ListsHostFragment : Fragment() {
         }
     }
 
-    private fun navigateToList() {
+    private fun navigateToAuth() {
         findNavController().navigate(
             ListsHostFragmentDirections.actionListsHostFragmentToAuthFragment()
         )
@@ -131,4 +156,8 @@ class ListsHostFragment : Fragment() {
         text,
         Snackbar.LENGTH_LONG
     ).show()
+
+    private fun getSortIconResId(isDesc: Boolean): Int {
+        return if (isDesc) R.drawable.ic_sort_descending_24 else R.drawable.ic_sort_ascending_24
+    }
 }

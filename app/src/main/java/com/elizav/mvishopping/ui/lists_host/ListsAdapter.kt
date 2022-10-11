@@ -10,7 +10,7 @@ class ListsAdapter(fragment: Fragment, private val clientId: String) :
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment {
-        return getFragmentsCollection(clientId = clientId).getOrNull(position)?.fragment
+        return getFragmentsCollection(clientId = clientId).getOrNull(position)?.listFragment
             ?: throw IllegalArgumentException()
     }
 }

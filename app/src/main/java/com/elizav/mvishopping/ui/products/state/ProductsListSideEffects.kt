@@ -17,10 +17,10 @@ class ProductsListSideEffects @Inject constructor(
     private fun loadProductsSideEffect(): SideEffect<ProductsListState, ProductsListAction> =
         { actions, state ->
             actions.ofType<ProductsListAction.LoadProducts>()
-                .switchMap {
-                    productsRepository.getAllProducts(it.clientId).toObservable()
+                .switchMap { loadProducts ->
+                    productsRepository.getAllProducts(loadProducts.clientId).toObservable()
                         .map<ProductsListAction> { result ->
-                            ProductsListAction.LoadedAction(result)
+                            ProductsListAction.LoadedAction(result.sortedBy { it.name })
                         }
                         ?.onErrorReturn { error ->
                             ProductsListAction.ErrorAction(
