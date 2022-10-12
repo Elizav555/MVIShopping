@@ -6,9 +6,6 @@ class ListReducer : (ListState, ListAction) -> ListState {
             is ListAction.ErrorAction -> state.copy(
                 isLoading = false, errorMsg = action.errorMsg,
             )
-            is ListAction.LoadProducts -> state.copy(
-                isLoading = true, errorMsg = null
-            )
             is ListAction.LoadedAction -> state.copy(
                 isLoading = false, errorMsg = null, products = action.products
             )
@@ -16,7 +13,7 @@ class ListReducer : (ListState, ListAction) -> ListState {
                 isLoading = true, errorMsg = null, isDesc = action.isDesc
             )
             is ListAction.UpdateProductAction -> state.copy(
-                isLoading = true, errorMsg = null
+                isLoading = false, errorMsg = null
             )
         }
 }

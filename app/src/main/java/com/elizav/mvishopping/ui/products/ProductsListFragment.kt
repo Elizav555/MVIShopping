@@ -47,7 +47,6 @@ class ProductsListFragment(clientId: String) : BaseListFragment(clientId) {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
         initAdapter(::checkedFunc)
-        actions.onNext(ListAction.LoadProducts)
     }
 
     override fun onDestroyView() {

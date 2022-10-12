@@ -4,6 +4,7 @@ import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
 import com.elizav.mvishopping.ui.baseList.state.ListState
+import com.elizav.mvishopping.utils.ProductListExtension.sortByName
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType
@@ -13,43 +14,25 @@ class ProductsListSideEffects @Inject constructor(
     private val productsRepository: ProductsRepository,
 ) : ListSideEffects {
     override val sideEffects = listOf(
-        loadProductsSideEffect(),
         sortProductsSideEffect(),
-        updateProductSideEffect()
+        updateProductSideEffect(),
+        observeProductsSideEffect()
     )
-
-    override fun loadProductsSideEffect(): SideEffect<ListState, ListAction> =
-        { actions, state ->
-            actions.ofType<ListAction.LoadProducts>()
-                .switchMap {
-                    productsRepository.getAllProducts(state().clientId).toObservable()
-                        .map<ListAction> { result ->
-                            ListAction.LoadedAction(if (state().isDesc) {
-                                result.sortedByDescending { it.name }
-                            } else {
-                                result.sortedBy { it.name }
-                            })
-                        }
-                        ?.onErrorReturn { error ->
-                            ListAction.ErrorAction(
-                                error.message ?: ""
-                            )
-                        }
-                }
-        }
 
     override fun sortProductsSideEffect(): SideEffect<ListState, ListAction> =
         { actions, state ->
             actions.ofType<ListAction.SortAction>()
                 .switchMap {
                     Observable.create<ListAction> { emitter ->
-                        val newProducts = if (state().isDesc) {
-                            state().products?.sortedByDescending { it.name }
-                        } else {
-                            state().products?.sortedBy { it.name }
-                        }
-                        newProducts?.let { emitter.onNext(ListAction.LoadedAction(newProducts)) }
-                            ?: emitter.onError(Exception())
+                        state().products?.let {
+                            emitter.onNext(
+                                ListAction.LoadedAction(
+                                    it.sortByName(
+                                        state().isDesc
+                                    )
+                                )
+                            )
+                        } ?: emitter.onError(Exception())
                     }
                 }
         }
@@ -60,13 +43,16 @@ class ProductsListSideEffects @Inject constructor(
                 val newProducts = state().products?.toMutableList()
                 newProducts?.set(updateAction.productPosition, updateAction.updatedProduct)
                 productsRepository.addProduct(state().clientId, updateAction.updatedProduct)
-                    .toObservable().map<ListAction> {
-                        if (!it || newProducts == null) {
-                            ListAction.ErrorAction("")
-                        } else {
-                            ListAction.LoadedAction(newProducts)
-                        }
+                    .toObservable().filter { !it || newProducts == null }.map<ListAction> {
+                        ListAction.ErrorAction("")
                     }.onErrorReturn { ListAction.ErrorAction(it.message ?: "") }
             }
     }
+
+    override fun observeProductsSideEffect(): SideEffect<ListState, ListAction> =
+        { actions, state ->
+            productsRepository.observeProducts(state().clientId).map<ListAction> {
+                ListAction.LoadedAction(it.sortByName(state().isDesc))
+            }.onErrorReturn { ListAction.ErrorAction(it.message ?: "") }
+        }
 }

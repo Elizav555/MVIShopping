@@ -46,12 +46,6 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
         initAdapter(null)
-        actions.onNext(ListAction.LoadProducts)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        actions.onNext(ListAction.LoadProducts)
     }
 
     override fun onDestroyView() {
