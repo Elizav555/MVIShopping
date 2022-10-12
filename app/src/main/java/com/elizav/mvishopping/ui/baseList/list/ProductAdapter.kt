@@ -7,7 +7,7 @@ import com.elizav.mvishopping.databinding.ItemProductBinding
 import com.elizav.mvishopping.domain.model.Product
 
 class ProductAdapter(
-    private val checkedFunc: ((position: Int) -> Unit)?,
+    private val checkedFunc: ((position: Int, isChecked: Boolean, product: Product) -> Unit)?,
 ) : ListAdapter<Product, ProductHolder>(ProductDiffUtilCallback()) {
 
     override fun onCreateViewHolder(

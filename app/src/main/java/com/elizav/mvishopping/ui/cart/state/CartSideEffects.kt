@@ -14,7 +14,8 @@ class CartSideEffects @Inject constructor(
 ) : ListSideEffects {
     override val sideEffects = listOf(
         loadProductsSideEffect(),
-        sortProductsSideEffect()
+        sortProductsSideEffect(),
+        updateProductSideEffect()
     )
 
     override fun loadProductsSideEffect(): SideEffect<ListState, ListAction> =
@@ -52,5 +53,20 @@ class CartSideEffects @Inject constructor(
                     }
                 }
         }
+
+    override fun updateProductSideEffect(): SideEffect<ListState, ListAction> = { actions, state ->
+        actions.ofType<ListAction.UpdateProductAction>()
+            .switchMap { updateAction ->
+                val newProducts = state().products?.toMutableList()
+                newProducts?.set(updateAction.productPosition,updateAction.updatedProduct)
+                productsRepository.addProduct(state().clientId,updateAction.updatedProduct).toObservable().map<ListAction> {
+                    if(!it||newProducts==null){
+                        ListAction.ErrorAction("")
+                    }else{
+                        ListAction.LoadedAction(newProducts)
+                    }
+                }.onErrorReturn {  ListAction.ErrorAction(it.message?:"") }
+            }
+    }
 }
 

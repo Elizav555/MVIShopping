@@ -15,5 +15,8 @@ class ListReducer : (ListState, ListAction) -> ListState {
             is ListAction.SortAction -> state.copy(
                 isLoading = true, errorMsg = null
             )
+            is ListAction.UpdateProductAction -> state.copy(
+                isLoading = true, errorMsg = null
+            )
         }
 }

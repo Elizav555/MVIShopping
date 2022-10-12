@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.elizav.mvishopping.databinding.FragmentProductsListBinding
 import com.elizav.mvishopping.di.ProductsListSideEffects
+import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListReducer
@@ -58,7 +59,11 @@ class ProductsListFragment(private val clientId: String) : BaseListFragment(clie
         compositeDisposable.clear()
     }
 
-    private fun checkedFunc(position: Int) {
+    private fun checkedFunc(position: Int, isChecked: Boolean, product: Product) {
         //TODO
+        updateProduct(
+            position,
+            product.copy(isPurchased = isChecked)
+        )
     }
 }

@@ -8,4 +8,6 @@ interface ListSideEffects {
     fun loadProductsSideEffect(): SideEffect<ListState, ListAction>
 
     fun sortProductsSideEffect(): SideEffect<ListState, ListAction>
+
+    fun updateProductSideEffect(): SideEffect<ListState, ListAction>
 }

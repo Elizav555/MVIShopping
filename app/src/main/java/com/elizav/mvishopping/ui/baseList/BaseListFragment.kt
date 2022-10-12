@@ -60,7 +60,7 @@ abstract class BaseListFragment(private val clientId: String) : Fragment() {
         ).show()
     }
 
-    open fun initAdapter(checkedFunc: ((position: Int) -> Unit)?) = view?.apply {
+    open fun initAdapter(checkedFunc: ((position: Int, isChecked: Boolean, product: Product) -> Unit)?) = view?.apply {
         productsAdapter =
             ProductAdapter(checkedFunc)
         with(findViewById<RecyclerView>(R.id.recycler_view)) {
@@ -82,5 +82,9 @@ abstract class BaseListFragment(private val clientId: String) : Fragment() {
 
     open fun sortList() {
         actions.onNext(ListAction.SortAction(isDesc))
+    }
+
+    open fun updateProduct(productPosition:Int, updatedProduct: Product){
+        actions.onNext(ListAction.UpdateProductAction(productPosition, updatedProduct))
     }
 }

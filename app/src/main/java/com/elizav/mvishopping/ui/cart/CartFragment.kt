@@ -52,6 +52,11 @@ class CartFragment(private val clientId: String) : BaseListFragment(clientId) {
         actions.onNext(ListAction.LoadProducts)
     }
 
+    override fun onResume() {
+        super.onResume()
+        actions.onNext(ListAction.LoadProducts)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
