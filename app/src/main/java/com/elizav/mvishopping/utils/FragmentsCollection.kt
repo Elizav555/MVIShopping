@@ -3,8 +3,8 @@ package com.elizav.mvishopping.utils
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.elizav.mvishopping.R
+import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.cart.CartFragment
-import com.elizav.mvishopping.ui.lists_host.BaseListFragment
 import com.elizav.mvishopping.ui.products.ProductsListFragment
 
 fun getFragmentsCollection(clientId: String) = listOf(

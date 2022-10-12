@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.lists_host
+package com.elizav.mvishopping.ui.baseList
 
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -8,16 +8,42 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.domain.model.Product
+import com.elizav.mvishopping.ui.baseList.state.ListAction
+import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
+import com.elizav.mvishopping.ui.baseList.state.ListState
 import com.elizav.mvishopping.ui.lists_host.list.ProductAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.BehaviorSubject
 
 abstract class BaseListFragment(private val clientId: String) : Fragment() {
     open lateinit var productsAdapter: ProductAdapter
 
     //TODO swipe to refresh
-    abstract fun getCurrentProducts(): List<Product>
     abstract var isDesc: Boolean
+
+    open val actions: BehaviorSubject<ListAction> = BehaviorSubject.create<ListAction>()
+    open val compositeDisposable = CompositeDisposable()
+
+    abstract val listSideEffects: ListSideEffects
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        compositeDisposable.clear()
+    }
+
+    open fun render(state: ListState) {
+        showLoading(state.isLoading)
+        when {
+            state.products != null -> {
+                updateList(state.products)
+            }
+            state.errorMsg != null -> {
+                showSnackbar(state.errorMsg)
+            }
+        }
+    }
 
     open fun showLoading(isLoading: Boolean = true) {
         view?.apply {
@@ -54,12 +80,7 @@ abstract class BaseListFragment(private val clientId: String) : Fragment() {
         it.findViewById<TextView>(R.id.tv_empty).isVisible = products.isEmpty()
     }
 
-    open fun sortList(products: List<Product>, isDescending: Boolean) {
-        productsAdapter.submitList(if (isDescending) {
-            products.sortedByDescending { it.name }
-        } else {
-            products.sortedBy { it.name }
-        }
-        )
+    open fun sortList() {
+        actions.onNext(ListAction.SortAction(isDesc))
     }
 }

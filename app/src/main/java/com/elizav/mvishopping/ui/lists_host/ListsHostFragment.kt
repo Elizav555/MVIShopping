@@ -16,6 +16,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentListsHostBinding
+import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.lists_host.state.HostAction
 import com.elizav.mvishopping.ui.lists_host.state.HostReducer
 import com.elizav.mvishopping.ui.lists_host.state.HostSideEffects
@@ -51,12 +52,12 @@ class ListsHostFragment : Fragment() {
             super.onPageSelected(position)
             val currentFragment =
                 listsAdapter.fragments.getOrNull(position)
-                val isDesc = currentFragment?.isDesc?:false
-                sortItem?.icon = ResourcesCompat.getDrawable(
-                    resources,
-                    getSortIconResId(isDesc),
-                    null
-                )
+            val isDesc = currentFragment?.isDesc ?: false
+            sortItem?.icon = ResourcesCompat.getDrawable(
+                resources,
+                getSortIconResId(isDesc),
+                null
+            )
         }
     }
 
@@ -106,7 +107,7 @@ class ListsHostFragment : Fragment() {
                             .find { it is BaseListFragment && it.isResumed } as BaseListFragment?
                         currentFragment?.apply {
                             isDesc = !isDesc
-                            sortList(getCurrentProducts(), isDesc)
+                            sortList()
                             menuItem.icon = ResourcesCompat.getDrawable(
                                 resources,
                                 getSortIconResId(isDesc),

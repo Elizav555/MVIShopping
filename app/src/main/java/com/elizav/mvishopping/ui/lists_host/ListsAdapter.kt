@@ -2,6 +2,7 @@ package com.elizav.mvishopping.ui.lists_host
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.utils.getFragmentsCollection
 
 class ListsAdapter(fragment: Fragment, private val clientId: String) :
