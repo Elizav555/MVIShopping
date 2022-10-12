@@ -19,7 +19,7 @@
 
         <fragment
             android:id="@+id/listsHostFragment"
-            android:name="com.elizav.mvishopping.ui.lists_host.ListsHostFragment"
+            android:name="com.elizav.mvishopping.ui.listsHost.ListsHostFragment"
             android:label="@string/app_name"
             tools:layout="@layout/fragment_lists_host">
             <action

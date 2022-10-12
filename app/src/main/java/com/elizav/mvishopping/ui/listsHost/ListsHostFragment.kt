@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.lists_host
+package com.elizav.mvishopping.ui.listsHost
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,10 +17,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentListsHostBinding
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
-import com.elizav.mvishopping.ui.lists_host.state.HostAction
-import com.elizav.mvishopping.ui.lists_host.state.HostReducer
-import com.elizav.mvishopping.ui.lists_host.state.HostSideEffects
-import com.elizav.mvishopping.ui.lists_host.state.HostState
+import com.elizav.mvishopping.ui.listsHost.state.HostAction
+import com.elizav.mvishopping.ui.listsHost.state.HostReducer
+import com.elizav.mvishopping.ui.listsHost.state.HostSideEffects
+import com.elizav.mvishopping.ui.listsHost.state.HostState
 import com.elizav.mvishopping.utils.getFragmentsCollection
 import com.freeletics.rxredux.reduxStore
 import com.google.android.material.snackbar.Snackbar

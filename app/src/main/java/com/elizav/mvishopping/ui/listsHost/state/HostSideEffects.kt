@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.lists_host.state
+package com.elizav.mvishopping.ui.listsHost.state
 
 import com.elizav.mvishopping.domain.auth.AuthRepository
 import com.freeletics.rxredux.SideEffect

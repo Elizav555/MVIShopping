@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.lists_host
+package com.elizav.mvishopping.ui.listsHost
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter

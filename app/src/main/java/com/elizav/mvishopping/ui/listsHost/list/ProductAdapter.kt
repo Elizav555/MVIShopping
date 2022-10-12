@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.lists_host.list
+package com.elizav.mvishopping.ui.listsHost.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

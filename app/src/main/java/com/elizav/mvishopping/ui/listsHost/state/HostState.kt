@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.lists_host.state
+package com.elizav.mvishopping.ui.listsHost.state
 
 data class HostState(
     val errorMsg: String? = null,

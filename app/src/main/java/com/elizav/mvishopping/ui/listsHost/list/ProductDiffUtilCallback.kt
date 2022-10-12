@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.lists_host.list
+package com.elizav.mvishopping.ui.listsHost.list
 
 import androidx.recyclerview.widget.DiffUtil
 import com.elizav.mvishopping.domain.model.Product
