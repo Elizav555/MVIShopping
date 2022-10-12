@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.listsHost.list
+package com.elizav.mvishopping.ui.baseList.list
 
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
