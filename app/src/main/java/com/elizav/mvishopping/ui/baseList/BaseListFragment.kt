@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.domain.model.Product
+import com.elizav.mvishopping.ui.baseList.list.ProductAdapter
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
 import com.elizav.mvishopping.ui.baseList.state.ListState
-import com.elizav.mvishopping.ui.listsHost.list.ProductAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.disposables.CompositeDisposable
