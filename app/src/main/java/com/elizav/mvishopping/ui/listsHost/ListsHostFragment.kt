@@ -52,7 +52,7 @@ class ListsHostFragment : Fragment() {
             super.onPageSelected(position)
             val currentFragment =
                 listsAdapter.fragments.getOrNull(position)
-            val isDesc = currentFragment?.isDesc ?: false
+            val isDesc = currentFragment?.currentState?.isDesc ?: false
             sortItem?.icon = ResourcesCompat.getDrawable(
                 resources,
                 getSortIconResId(isDesc),
@@ -106,11 +106,10 @@ class ListsHostFragment : Fragment() {
                         val currentFragment = childFragmentManager.fragments
                             .find { it is BaseListFragment && it.isResumed } as BaseListFragment?
                         currentFragment?.apply {
-                            isDesc = !isDesc
-                            sortList()
+                            sortList(!currentState.isDesc)
                             menuItem.icon = ResourcesCompat.getDrawable(
                                 resources,
-                                getSortIconResId(isDesc),
+                                getSortIconResId(!currentState.isDesc),
                                 null
                             )
                         }

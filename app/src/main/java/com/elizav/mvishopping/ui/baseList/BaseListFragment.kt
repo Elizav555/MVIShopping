@@ -17,13 +17,12 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.BehaviorSubject
 
-abstract class BaseListFragment(private val clientId: String) : Fragment() {
+abstract class BaseListFragment(clientId: String) : Fragment() {
     open lateinit var productsAdapter: ProductAdapter
 
-    //TODO swipe to refresh
-    abstract var isDesc: Boolean
+    open var currentState: ListState = ListState(clientId)
 
-    open val actions: BehaviorSubject<ListAction> = BehaviorSubject.create<ListAction>()
+    open val actions: BehaviorSubject<ListAction> = BehaviorSubject.create()
     open val compositeDisposable = CompositeDisposable()
 
     abstract val listSideEffects: ListSideEffects
@@ -34,6 +33,7 @@ abstract class BaseListFragment(private val clientId: String) : Fragment() {
     }
 
     open fun render(state: ListState) {
+        currentState = state
         showLoading(state.isLoading)
         when {
             state.products != null -> {
@@ -60,27 +60,28 @@ abstract class BaseListFragment(private val clientId: String) : Fragment() {
         ).show()
     }
 
-    open fun initAdapter(checkedFunc: ((position: Int, isChecked: Boolean, product: Product) -> Unit)?) = view?.apply {
-        productsAdapter =
-            ProductAdapter(checkedFunc)
-        with(findViewById<RecyclerView>(R.id.recycler_view)) {
-            adapter = productsAdapter
-            layoutManager = LinearLayoutManager(requireContext())
-            setHasFixedSize(true)
-            val dividerItemDecoration = MaterialDividerItemDecoration(
-                context,
-                LinearLayoutManager.VERTICAL
-            )
-            addItemDecoration(dividerItemDecoration)
+    open fun initAdapter(checkedFunc: ((position: Int, isChecked: Boolean, product: Product) -> Unit)?) =
+        view?.apply {
+            productsAdapter =
+                ProductAdapter(checkedFunc)
+            with(findViewById<RecyclerView>(R.id.recycler_view)) {
+                adapter = productsAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+                setHasFixedSize(true)
+                val dividerItemDecoration = MaterialDividerItemDecoration(
+                    context,
+                    LinearLayoutManager.VERTICAL
+                )
+                addItemDecoration(dividerItemDecoration)
+            }
         }
-    }
 
     open fun updateList(products: List<Product>) = view?.let {
         productsAdapter.submitList(products)
         it.findViewById<TextView>(R.id.tv_empty).isVisible = products.isEmpty()
     }
 
-    open fun sortList() {
+    open fun sortList(isDesc: Boolean) {
         actions.onNext(ListAction.SortAction(isDesc))
     }
 

@@ -10,7 +10,6 @@ import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListReducer
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
-import com.elizav.mvishopping.ui.baseList.state.ListState
 import com.freeletics.rxredux.reduxStore
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,7 +17,7 @@ import io.reactivex.rxkotlin.plusAssign
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CartFragment(private val clientId: String) : BaseListFragment(clientId) {
+class CartFragment(clientId: String) : BaseListFragment(clientId) {
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
 
@@ -28,8 +27,6 @@ class CartFragment(private val clientId: String) : BaseListFragment(clientId) {
 
     override val listSideEffects: ListSideEffects
         get() = cartSideEffects
-
-    override var isDesc: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +39,7 @@ class CartFragment(private val clientId: String) : BaseListFragment(clientId) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         compositeDisposable += actions.reduxStore(
-            ListState(clientId),
+            currentState,
             listSideEffects.sideEffects,
             ListReducer()
         )

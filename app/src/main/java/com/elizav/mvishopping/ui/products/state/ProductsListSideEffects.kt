@@ -24,7 +24,11 @@ class ProductsListSideEffects @Inject constructor(
                 .switchMap {
                     productsRepository.getAllProducts(state().clientId).toObservable()
                         .map<ListAction> { result ->
-                            ListAction.LoadedAction(result.sortedBy { it.name })
+                            ListAction.LoadedAction(if (state().isDesc) {
+                                result.sortedByDescending { it.name }
+                            } else {
+                                result.sortedBy { it.name }
+                            })
                         }
                         ?.onErrorReturn { error ->
                             ListAction.ErrorAction(
@@ -37,9 +41,9 @@ class ProductsListSideEffects @Inject constructor(
     override fun sortProductsSideEffect(): SideEffect<ListState, ListAction> =
         { actions, state ->
             actions.ofType<ListAction.SortAction>()
-                .switchMap { sortAction ->
+                .switchMap {
                     Observable.create<ListAction> { emitter ->
-                        val newProducts = if (sortAction.isDesc) {
+                        val newProducts = if (state().isDesc) {
                             state().products?.sortedByDescending { it.name }
                         } else {
                             state().products?.sortedBy { it.name }
@@ -54,14 +58,15 @@ class ProductsListSideEffects @Inject constructor(
         actions.ofType<ListAction.UpdateProductAction>()
             .switchMap { updateAction ->
                 val newProducts = state().products?.toMutableList()
-                newProducts?.set(updateAction.productPosition,updateAction.updatedProduct)
-                productsRepository.addProduct(state().clientId,updateAction.updatedProduct).toObservable().map<ListAction> {
-                    if(!it||newProducts==null){
-                        ListAction.ErrorAction("")
-                    }else{
-                        ListAction.LoadedAction(newProducts)
-                    }
-                }.onErrorReturn {  ListAction.ErrorAction(it.message?:"") }
+                newProducts?.set(updateAction.productPosition, updateAction.updatedProduct)
+                productsRepository.addProduct(state().clientId, updateAction.updatedProduct)
+                    .toObservable().map<ListAction> {
+                        if (!it || newProducts == null) {
+                            ListAction.ErrorAction("")
+                        } else {
+                            ListAction.LoadedAction(newProducts)
+                        }
+                    }.onErrorReturn { ListAction.ErrorAction(it.message ?: "") }
             }
     }
 }
