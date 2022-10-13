@@ -114,7 +114,6 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
                     },
                     cancelOnClickListener = { dialog, _ ->
                         dialog?.cancel()
-                        //TODO why not working
                         productsAdapter.notifyItemChanged(position)
                     }
                 ))
