@@ -7,10 +7,12 @@ import com.elizav.mvishopping.domain.model.Product
 
 class ProductHolder(
     private val binding: ItemProductBinding,
-    private val checkedFunc: ((position: Int, isChecked: Boolean, product: Product) -> Unit)?,
+    private val onClickFunc: ((position: Int) -> Unit)?,
+    private val checkedFunc: ((position: Int, isChecked: Boolean) -> Unit)?,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(product: Product) {
+        itemView.setOnClickListener { onClickFunc?.let { action -> action(adapterPosition) } }
         with(binding) {
             val isCart = checkedFunc == null
             tvProductName.text = product.name
@@ -19,7 +21,7 @@ class ProductHolder(
             ivFilter.isVisible = !isCart && product.isPurchased
             checkedFunc?.let {
                 checkBoxIsPurchased.setOnCheckedChangeListener { _, isChecked ->
-                    it(adapterPosition,isChecked,product)
+                    it(adapterPosition, isChecked)
                     checkBoxIsPurchased.setOnCheckedChangeListener(null)
                 }
             }

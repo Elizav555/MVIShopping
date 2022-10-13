@@ -30,10 +30,8 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
     open fun updateProductSideEffect(): SideEffect<ListState, ListAction> = { actions, state ->
         actions.ofType<ListAction.UpdateProductAction>()
             .switchMap { updateAction ->
-                val newProducts = state().products?.toMutableList()
-                newProducts?.set(updateAction.productPosition, updateAction.updatedProduct)
                 productsRepository.addProduct(state().clientId, updateAction.updatedProduct)
-                    .toObservable().filter { !it || newProducts == null }.map<ListAction> {
+                    .toObservable().filter { !it }.map<ListAction> {
                         ListAction.ErrorAction("")
                     }.onErrorReturn { ListAction.ErrorAction(it.message ?: "") }
             }

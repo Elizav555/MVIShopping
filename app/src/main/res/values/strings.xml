@@ -14,4 +14,8 @@
     <string name="tv_empty_text">Ups, there are no products</string>
     <string name="add_product">Add product</string>
     <string name="filter">Filter</string>
+    <string name="enter_product_s_name">Enter product\'s name</string>
+    <string name="cancel">Cancel</string>
+    <string name="activity_error">Activity cannot be null</string>
+    <string name="change_name">Change name</string>
 </resources>

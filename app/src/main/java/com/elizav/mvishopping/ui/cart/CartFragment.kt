@@ -10,6 +10,7 @@ import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListReducer
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
+import com.elizav.mvishopping.ui.products.dialog.ChangeProductDialog
 import com.freeletics.rxredux.reduxStore
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,7 +46,7 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
         )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
-        initAdapter(null)
+        initAdapter(null, null)
     }
 
     override fun onDestroyView() {

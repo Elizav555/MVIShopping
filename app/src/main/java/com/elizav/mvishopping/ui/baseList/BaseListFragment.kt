@@ -60,10 +60,13 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
         ).show()
     }
 
-    open fun initAdapter(checkedFunc: ((position: Int, isChecked: Boolean, product: Product) -> Unit)?) =
+    open fun initAdapter(
+        onClickFunc: ((position: Int) -> Unit)?,
+        checkedFunc: ((position: Int, isChecked: Boolean) -> Unit)?
+    ) =
         view?.apply {
             productsAdapter =
-                ProductAdapter(checkedFunc)
+                ProductAdapter(onClickFunc, checkedFunc)
             with(findViewById<RecyclerView>(R.id.recycler_view)) {
                 adapter = productsAdapter
                 layoutManager = LinearLayoutManager(requireContext())
@@ -85,7 +88,7 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
         actions.onNext(ListAction.SortAction(isDesc))
     }
 
-    open fun updateProduct(productPosition:Int, updatedProduct: Product){
-        actions.onNext(ListAction.UpdateProductAction(productPosition, updatedProduct))
+    open fun updateProduct(updatedProduct: Product) {
+        actions.onNext(ListAction.UpdateProductAction(updatedProduct))
     }
 }

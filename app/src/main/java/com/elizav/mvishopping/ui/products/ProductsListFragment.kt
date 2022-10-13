@@ -8,9 +8,9 @@ import com.elizav.mvishopping.databinding.FragmentProductsListBinding
 import com.elizav.mvishopping.di.ProductsListSideEffects
 import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
-import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListReducer
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
+import com.elizav.mvishopping.ui.products.dialog.ChangeProductDialog
 import com.freeletics.rxredux.reduxStore
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,7 +46,10 @@ class ProductsListFragment(clientId: String) : BaseListFragment(clientId) {
         )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
-        initAdapter(::checkedFunc)
+        initAdapter(::changeProductDialog, ::checkedFunc)
+        binding.fabAdd.setOnClickListener {
+            changeProductDialog()
+        }
     }
 
     override fun onDestroyView() {
@@ -55,10 +58,36 @@ class ProductsListFragment(clientId: String) : BaseListFragment(clientId) {
         compositeDisposable.clear()
     }
 
-    private fun checkedFunc(position: Int, isChecked: Boolean, product: Product) {
-        updateProduct(
-            position,
-            product.copy(isPurchased = isChecked)
-        )
+    private fun checkedFunc(position: Int, isChecked: Boolean) =
+        currentState.products?.getOrNull(position)?.let { product ->
+            updateProduct(
+                product.copy(isPurchased = isChecked)
+            )
+        }
+
+
+    private fun changeProductDialog(position: Int? = null) {
+        val productOldName = position?.let { currentState.products?.getOrNull(it) }?.name
+        ChangeProductDialog(productOldName, position)
+            .show(childFragmentManager, "dialog")
+    }
+
+    fun changeProductName(newName: String, position: Int?) {
+        if (position == null || currentState.products?.getOrNull(position) == null) {
+            val id = currentState.products?.size ?: 0
+            updateProduct(
+                 Product(
+                    id = id,
+                    name = newName,
+                    isPurchased = false
+                )
+            )
+        } else {
+            currentState.products?.getOrNull(position)?.let {
+                updateProduct(
+                    it.copy(name = newName)
+                )
+            }
+        }
     }
 }
