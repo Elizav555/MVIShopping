@@ -18,4 +18,5 @@
     <string name="cancel">Cancel</string>
     <string name="activity_error">Activity cannot be null</string>
     <string name="change_name">Change name</string>
+    <string name="yes">Yes</string>
 </resources>

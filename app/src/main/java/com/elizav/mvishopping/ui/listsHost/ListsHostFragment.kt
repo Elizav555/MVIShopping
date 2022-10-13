@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -107,17 +108,12 @@ class ListsHostFragment : Fragment() {
                             .find { it is BaseListFragment && it.isResumed } as BaseListFragment?
                         currentFragment?.apply {
                             sortList(!currentState.isDesc)
-                            menuItem.icon = ResourcesCompat.getDrawable(
-                                resources,
-                                getSortIconResId(!currentState.isDesc),
-                                null
-                            )
+                            menuItem.setIcon(getSortIconResId(!currentState.isDesc))
                         }
                         return true
                     }
                     R.id.action_logout -> {
-                        //TODO ask before
-                        actions.onNext(HostAction.LogoutAction)
+                        showLogoutDialog()
                         return true
                     }
                     else -> false
@@ -132,6 +128,20 @@ class ListsHostFragment : Fragment() {
         binding.viewPager.unregisterOnPageChangeCallback(onPageChangeListenerCallback)
         _binding = null
         compositeDisposable.clear()
+    }
+
+    private fun showLogoutDialog() = activity?.let {
+        val dialog = AlertDialog.Builder(it)
+            .setTitle(getString(R.string.logout))
+            .setMessage("Are you sure u wanna logout?")
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                actions.onNext(HostAction.LogoutAction)
+            }
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog?.cancel()
+            }
+            .create()
+        dialog.show()
     }
 
     private fun render(
