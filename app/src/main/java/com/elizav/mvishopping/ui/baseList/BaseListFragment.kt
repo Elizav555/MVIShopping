@@ -4,6 +4,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.elizav.mvishopping.R
@@ -12,6 +13,7 @@ import com.elizav.mvishopping.ui.baseList.list.ProductAdapter
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
 import com.elizav.mvishopping.ui.baseList.state.ListState
+import com.elizav.mvishopping.utils.MySwipeCallback
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.disposables.CompositeDisposable
@@ -76,8 +78,32 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
                     LinearLayoutManager.VERTICAL
                 )
                 addItemDecoration(dividerItemDecoration)
+
+                val swipeToDeleteCallback =
+                    object : MySwipeCallback(requireContext()) {
+                        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                            val pos = viewHolder.adapterPosition
+                            currentState.products?.getOrNull(pos)?.let { deleteProduct(it.id) }
+                        }
+
+                        override fun onMove(
+                            recyclerView: RecyclerView,
+                            viewHolder: RecyclerView.ViewHolder,
+                            target: RecyclerView.ViewHolder
+                        ): Boolean {
+                            return false
+                        }
+                    }
+
+                val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+                itemTouchHelper.attachToRecyclerView(this)
             }
         }
+
+    open fun deleteProduct(id: Int) {
+        //TODO ask before
+        actions.onNext(ListAction.DeleteProductAction(id))
+    }
 
     open fun updateList(products: List<Product>) = view?.let {
         productsAdapter.submitList(products)

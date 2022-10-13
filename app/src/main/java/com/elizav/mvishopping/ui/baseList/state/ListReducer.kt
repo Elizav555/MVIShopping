@@ -15,5 +15,8 @@ class ListReducer : (ListState, ListAction) -> ListState {
             is ListAction.UpdateProductAction -> state.copy(
                 isLoading = false, errorMsg = null
             )
+            is ListAction.DeleteProductAction -> state.copy(
+                isLoading = false, errorMsg = null
+            )
         }
 }

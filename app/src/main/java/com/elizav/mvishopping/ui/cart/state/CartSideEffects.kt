@@ -16,6 +16,7 @@ class CartSideEffects @Inject constructor(
     override val sideEffects: List<SideEffect<ListState, ListAction>> = listOf(
         sortProductsSideEffect(),
         updateProductSideEffect(),
+        deleteProductSideEffect(),
         observeProductsSideEffect()
     )
 

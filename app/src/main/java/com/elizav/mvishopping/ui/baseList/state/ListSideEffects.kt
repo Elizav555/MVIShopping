@@ -37,5 +37,15 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
             }
     }
 
+    open fun deleteProductSideEffect(): SideEffect<ListState, ListAction> = { actions, state ->
+        actions.ofType<ListAction.DeleteProductAction>()
+            .switchMap { deleteAction ->
+                productsRepository.deleteProduct(state().clientId, deleteAction.productId.toString())
+                    .toObservable().filter { !it }.map<ListAction> {
+                        ListAction.ErrorAction("")
+                    }.onErrorReturn { ListAction.ErrorAction(it.message ?: "") }
+            }
+    }
+
     abstract fun observeProductsSideEffect(): SideEffect<ListState, ListAction>
 }

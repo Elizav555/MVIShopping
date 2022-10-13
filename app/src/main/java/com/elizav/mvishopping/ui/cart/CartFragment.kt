@@ -54,4 +54,12 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
         _binding = null
         compositeDisposable.clear()
     }
+
+    override fun deleteProduct(id: Int) {
+        currentState.products?.firstOrNull { it.id == id }?.let { product ->
+            updateProduct(
+                product.copy(isPurchased = false)
+            )
+        }
+    }
 }
