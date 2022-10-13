@@ -40,7 +40,7 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
         super.onViewCreated(view, savedInstanceState)
         compositeDisposable += actions.reduxStore(
             currentState,
-            listSideEffects.sideEffects,
+            cartSideEffects.sideEffects,
             ListReducer()
         )
             .observeOn(AndroidSchedulers.mainThread())

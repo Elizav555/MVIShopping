@@ -20,6 +20,7 @@ class ProductHolder(
             checkedFunc?.let {
                 checkBoxIsPurchased.setOnCheckedChangeListener { _, isChecked ->
                     it(adapterPosition,isChecked,product)
+                    checkBoxIsPurchased.setOnCheckedChangeListener(null)
                 }
             }
         }
