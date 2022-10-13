@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -22,6 +21,8 @@ import com.elizav.mvishopping.ui.listsHost.state.HostAction
 import com.elizav.mvishopping.ui.listsHost.state.HostReducer
 import com.elizav.mvishopping.ui.listsHost.state.HostSideEffects
 import com.elizav.mvishopping.ui.listsHost.state.HostState
+import com.elizav.mvishopping.utils.DialogParams
+import com.elizav.mvishopping.utils.ShowDialog.showDialog
 import com.elizav.mvishopping.utils.getFragmentsCollection
 import com.freeletics.rxredux.reduxStore
 import com.google.android.material.snackbar.Snackbar
@@ -131,17 +132,17 @@ class ListsHostFragment : Fragment() {
     }
 
     private fun showLogoutDialog() = activity?.let {
-        val dialog = AlertDialog.Builder(it)
-            .setTitle(getString(R.string.logout))
-            .setMessage("Are you sure u wanna logout?")
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+        showDialog(it, DialogParams(
+            title = getString(R.string.logout),
+            message = getString(R.string.message_logout),
+            submitBtnText = getString(R.string.yes),
+            submitOnClickListener = { _, _ ->
                 actions.onNext(HostAction.LogoutAction)
-            }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            },
+            cancelOnClickListener = { dialog, _ ->
                 dialog?.cancel()
             }
-            .create()
-        dialog.show()
+        ))
     }
 
     private fun render(

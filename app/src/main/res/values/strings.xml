@@ -19,4 +19,9 @@
     <string name="activity_error">Activity cannot be null</string>
     <string name="change_name">Change name</string>
     <string name="yes">Yes</string>
+    <string name="message_logout">Are you sure u wanna logout?</string>
+    <string name="delete">Delete</string>
+    <string name="message_delete">Are you sure you wanna delete this product? This action cannot be undone</string>
+    <string name="delete_cart">Delete from cart</string>
+    <string name="message_delete_cart">Are you sure you wanna remove this product from cart?</string>
 </resources>

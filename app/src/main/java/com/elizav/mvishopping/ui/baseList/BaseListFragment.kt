@@ -13,7 +13,10 @@ import com.elizav.mvishopping.ui.baseList.list.ProductAdapter
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
 import com.elizav.mvishopping.ui.baseList.state.ListState
+import com.elizav.mvishopping.ui.listsHost.state.HostAction
+import com.elizav.mvishopping.utils.DialogParams
 import com.elizav.mvishopping.utils.MySwipeCallback
+import com.elizav.mvishopping.utils.ShowDialog
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.disposables.CompositeDisposable
@@ -82,8 +85,7 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
                 val swipeToDeleteCallback =
                     object : MySwipeCallback(requireContext()) {
                         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                            val pos = viewHolder.adapterPosition
-                            currentState.products?.getOrNull(pos)?.let { deleteProduct(it.id) }
+                           deleteProduct(viewHolder.adapterPosition)
                         }
 
                         override fun onMove(
@@ -100,9 +102,24 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
             }
         }
 
-    open fun deleteProduct(id: Int) {
-        //TODO ask before
-        actions.onNext(ListAction.DeleteProductAction(id))
+    open fun deleteProduct(position: Int) {
+        currentState.products?.getOrNull(position)?.let { product ->
+            activity?.let {
+                ShowDialog.showDialog(it, DialogParams(
+                    title = getString(R.string.delete),
+                    message = getString(R.string.message_delete),
+                    submitBtnText = getString(R.string.yes),
+                    submitOnClickListener = { _, _ ->
+                        actions.onNext(ListAction.DeleteProductAction(product.id))
+                    },
+                    cancelOnClickListener = { dialog, _ ->
+                        dialog?.cancel()
+                        //TODO why not working
+                        productsAdapter.notifyItemChanged(position)
+                    }
+                ))
+            }
+        }
     }
 
     open fun updateList(products: List<Product>) = view?.let {

@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentCartBinding
 import com.elizav.mvishopping.di.CartSideEffects
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
-import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListReducer
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
-import com.elizav.mvishopping.ui.products.dialog.ChangeProductDialog
+import com.elizav.mvishopping.utils.DialogParams
+import com.elizav.mvishopping.utils.ShowDialog
 import com.freeletics.rxredux.reduxStore
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -55,11 +56,24 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
         compositeDisposable.clear()
     }
 
-    override fun deleteProduct(id: Int) {
-        currentState.products?.firstOrNull { it.id == id }?.let { product ->
-            updateProduct(
-                product.copy(isPurchased = false)
-            )
+    override fun deleteProduct(position: Int) {
+        currentState.products?.getOrNull(position)?.let { product ->
+            activity?.let {
+                ShowDialog.showDialog(it, DialogParams(
+                    title = getString(R.string.delete_cart),
+                    message = getString(R.string.message_delete_cart),
+                    submitBtnText = getString(R.string.yes),
+                    submitOnClickListener = { _, _ ->
+                        updateProduct(
+                            product.copy(isPurchased = false)
+                        )
+                    },
+                    cancelOnClickListener = { dialog, _ ->
+                        dialog?.cancel()
+                        productsAdapter.notifyItemChanged(position)
+                    }
+                ))
+            }
         }
     }
 }
