@@ -13,9 +13,7 @@ object ShowDialog {
                 params.submitBtnText,
                 params.submitOnClickListener
             )
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog?.cancel()
-            }
+            .setNegativeButton(R.string.cancel, params.cancelOnClickListener)
             .create()
         dialog.show()
     }
