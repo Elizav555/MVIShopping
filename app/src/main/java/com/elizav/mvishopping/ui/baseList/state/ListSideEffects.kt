@@ -3,7 +3,7 @@ package com.elizav.mvishopping.ui.baseList.state
 import com.elizav.mvishopping.domain.model.AppException.Companion.DELETE_ERROR_MSG
 import com.elizav.mvishopping.domain.model.AppException.Companion.UPDATE_ERROR_MSG
 import com.elizav.mvishopping.domain.product.ProductsRepository
-import com.elizav.mvishopping.utils.ProductListExtension.sortByName
+import com.elizav.mvishopping.ui.utils.ProductListExtension.sortByName
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType

@@ -1,12 +1,12 @@
 package com.elizav.mvishopping.data.auth
 
 import android.content.Intent
+import com.elizav.mvishopping.data.client.ClientsRepositoryImpl.Companion.CLIENTS
+import com.elizav.mvishopping.data.client.ClientsRepositoryImpl.Companion.NAME
 import com.elizav.mvishopping.di.SignInRequest
 import com.elizav.mvishopping.di.SignUpRequest
 import com.elizav.mvishopping.domain.auth.AuthRepository
 import com.elizav.mvishopping.domain.model.AppException
-import com.elizav.mvishopping.utils.Constants.CLIENTS
-import com.elizav.mvishopping.utils.Constants.NAME
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient

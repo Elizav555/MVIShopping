@@ -5,7 +5,7 @@ import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
 import com.elizav.mvishopping.ui.baseList.state.ListState
-import com.elizav.mvishopping.utils.ProductListExtension.sortByName
+import com.elizav.mvishopping.ui.utils.ProductListExtension.sortByName
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType

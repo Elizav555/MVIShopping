@@ -10,8 +10,8 @@ import com.elizav.mvishopping.di.CartSideEffects
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.baseList.state.ListReducer
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
-import com.elizav.mvishopping.utils.DialogParams
-import com.elizav.mvishopping.utils.ShowDialog
+import com.elizav.mvishopping.ui.utils.DialogParams
+import com.elizav.mvishopping.ui.utils.ShowDialog
 import com.freeletics.rxredux.reduxStore
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers

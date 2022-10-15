@@ -21,9 +21,9 @@ import com.elizav.mvishopping.ui.listsHost.state.HostAction
 import com.elizav.mvishopping.ui.listsHost.state.HostReducer
 import com.elizav.mvishopping.ui.listsHost.state.HostSideEffects
 import com.elizav.mvishopping.ui.listsHost.state.HostState
-import com.elizav.mvishopping.utils.DialogParams
-import com.elizav.mvishopping.utils.ShowDialog.showDialog
-import com.elizav.mvishopping.utils.getFragmentsCollection
+import com.elizav.mvishopping.ui.utils.DialogParams
+import com.elizav.mvishopping.ui.utils.ShowDialog.showDialog
+import com.elizav.mvishopping.ui.utils.getFragmentsCollection
 import com.freeletics.rxredux.reduxStore
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator

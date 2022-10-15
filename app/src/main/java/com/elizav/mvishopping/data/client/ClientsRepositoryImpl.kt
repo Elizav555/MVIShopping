@@ -6,10 +6,6 @@ import com.elizav.mvishopping.domain.client.ClientsRepository
 import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.Client
 import com.elizav.mvishopping.domain.model.Product
-import com.elizav.mvishopping.utils.Constants
-import com.elizav.mvishopping.utils.Constants.CART
-import com.elizav.mvishopping.utils.Constants.NAME
-import com.elizav.mvishopping.utils.Constants.PRODUCTS
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import io.reactivex.Observable
@@ -20,7 +16,7 @@ import com.elizav.mvishopping.data.client.Client as ClientData
 class ClientsRepositoryImpl @Inject constructor(
     db: FirebaseFirestore,
 ) : ClientsRepository {
-    private val clientsCollection = db.collection(Constants.CLIENTS)
+    private val clientsCollection = db.collection(CLIENTS)
 
     override fun getAllClients(): Single<List<Client>> {
         return Single.create { emitter ->
@@ -110,4 +106,14 @@ class ClientsRepositoryImpl @Inject constructor(
                     emitter.onError(ex)
                 }
         }
+
+    companion object {
+        //Collection Reference
+        const val CLIENTS = "clients"
+
+        //Client fields
+        const val NAME = "name"
+        const val PRODUCTS = "products"
+        const val CART = "cart"
+    }
 }
