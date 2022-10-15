@@ -4,6 +4,7 @@ import android.content.Intent
 import com.elizav.mvishopping.di.SignInRequest
 import com.elizav.mvishopping.di.SignUpRequest
 import com.elizav.mvishopping.domain.auth.AuthRepository
+import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.utils.Constants.CLIENTS
 import com.elizav.mvishopping.utils.Constants.NAME
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -62,8 +63,8 @@ class AuthRepositoryImpl @Inject constructor(
         val credential = oneTapClient.getSignInCredentialFromIntent(intentData)
         credential.googleIdToken?.let { idToken ->
             val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
-            auth.signInWithCredential(firebaseCredential).addOnSuccessListener {
-                val isNewUser = it.additionalUserInfo?.isNewUser ?: false
+            auth.signInWithCredential(firebaseCredential).addOnSuccessListener { authResult ->
+                val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
                 if (isNewUser) {
                     auth.currentUser?.apply {
                         db.collection(CLIENTS).document(uid).set(mapOf(NAME to displayName))
@@ -74,11 +75,11 @@ class AuthRepositoryImpl @Inject constructor(
                             }
                     }
                 } else auth.currentUser?.let { emitter.onSuccess(it) }
-                    ?: emitter.onError(Exception())
+                    ?: emitter.onError(AppException.AuthErrorException())
             }.addOnFailureListener {
                 emitter.onError(it)
             }
-        } ?: emitter.onError(Exception())
+        } ?: emitter.onError(AppException.AuthErrorException())
     }
 
     override fun signOut(): Single<Boolean> = Single.create { emitter ->

@@ -1,7 +1,6 @@
 package com.elizav.mvishopping.ui.auth
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,10 +39,10 @@ class AuthFragment : Fragment() {
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             try {
-                it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) } ?: showSnackbar(getString(R.string.error))
+                it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) }
+                    ?: showSnackbar(getString(R.string.error))
             } catch (e: ApiException) {
                 showSnackbar(e.message ?: getString(R.string.error))
-                Log.w("TAG", "Google sign in failed", e)
             }
         }
 

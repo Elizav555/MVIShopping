@@ -2,6 +2,7 @@ package com.elizav.mvishopping.data.product
 
 import com.elizav.mvishopping.data.product.ProductMapper.toData
 import com.elizav.mvishopping.data.product.ProductMapper.toDomain
+import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.elizav.mvishopping.utils.Constants.CLIENTS
@@ -45,7 +46,7 @@ class ProductsRepositoryImpl @Inject constructor(db: FirebaseFirestore) :
                                     documentSnapshot.toObject<ProductData>()
                                         ?.toDomain(documentSnapshot.id.toIntOrNull() ?: 0)
                                 })
-                        } ?: emitter.onError(Exception())
+                        } ?: emitter.onError(AppException.LoadingErrorException())
                     }
                 }
         }

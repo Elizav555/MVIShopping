@@ -1,6 +1,7 @@
 package com.elizav.mvishopping.ui.listsHost.state
 
 import com.elizav.mvishopping.domain.auth.AuthRepository
+import com.elizav.mvishopping.domain.model.AppException.Companion.LOGOUT_ERROR_MSG
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.rxkotlin.ofType
 import javax.inject.Inject
@@ -21,7 +22,7 @@ class HostSideEffects @Inject constructor(
                     ?.map<HostAction> {
                         HostAction.SuccessLogoutAction
                     }
-                    ?.onErrorReturn { error -> HostAction.ErrorAction(error.message ?: "") }
+                    ?.onErrorReturn { error -> HostAction.ErrorAction(error.message ?: LOGOUT_ERROR_MSG) }
             }
     }
 

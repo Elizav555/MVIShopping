@@ -1,5 +1,7 @@
 package com.elizav.mvishopping.ui.baseList.state
 
+import com.elizav.mvishopping.domain.model.AppException.Companion.DELETE_ERROR_MSG
+import com.elizav.mvishopping.domain.model.AppException.Companion.UPDATE_ERROR_MSG
 import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.elizav.mvishopping.utils.ProductListExtension.sortByName
 import com.freeletics.rxredux.SideEffect
@@ -32,18 +34,21 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
             .switchMap { updateAction ->
                 productsRepository.addProduct(state().clientId, updateAction.updatedProduct)
                     .toObservable().filter { !it }.map<ListAction> {
-                        ListAction.ErrorAction("")
-                    }.onErrorReturn { ListAction.ErrorAction(it.message ?: "") }
+                        ListAction.ErrorAction(UPDATE_ERROR_MSG)
+                    }.onErrorReturn { ListAction.ErrorAction(it.message ?: UPDATE_ERROR_MSG) }
             }
     }
 
     open fun deleteProductSideEffect(): SideEffect<ListState, ListAction> = { actions, state ->
         actions.ofType<ListAction.DeleteProductAction>()
             .switchMap { deleteAction ->
-                productsRepository.deleteProduct(state().clientId, deleteAction.productId.toString())
+                productsRepository.deleteProduct(
+                    state().clientId,
+                    deleteAction.productId.toString()
+                )
                     .toObservable().filter { !it }.map<ListAction> {
-                        ListAction.ErrorAction("")
-                    }.onErrorReturn { ListAction.ErrorAction(it.message ?: "") }
+                        ListAction.ErrorAction(DELETE_ERROR_MSG)
+                    }.onErrorReturn { ListAction.ErrorAction(it.message ?: DELETE_ERROR_MSG) }
             }
     }
 

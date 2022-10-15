@@ -1,8 +1,8 @@
 package com.elizav.mvishopping.ui.auth.state
 
-import android.content.Context
 import android.content.Intent
 import com.elizav.mvishopping.domain.auth.AuthRepository
+import com.elizav.mvishopping.domain.model.AppException.Companion.AUTH_ERROR_MSG
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -28,7 +28,11 @@ class AuthSideEffects @Inject constructor(
                     ?.map<AuthAction> { result ->
                         AuthAction.SignedInAction(result.uid)
                     }
-                    ?.onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
+                    ?.onErrorReturn { error ->
+                        AuthAction.ErrorAction(
+                            error.message ?: AUTH_ERROR_MSG
+                        )
+                    }
                     ?: Single.create { emitter -> emitter.onSuccess(AuthAction.LoadedAction) }
                         .toObservable()
             }
@@ -48,7 +52,7 @@ class AuthSideEffects @Inject constructor(
             .map<AuthAction> { result ->
                 AuthAction.BeginSignInResultAction(result)
             }
-            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
+            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: AUTH_ERROR_MSG) }
     }
 
     private fun signInWithCredSideEffect(): SideEffect<AuthState, AuthAction> = { actions, state ->
@@ -66,7 +70,7 @@ class AuthSideEffects @Inject constructor(
             .map<AuthAction> { result ->
                 AuthAction.SignedInAction(clientId = result.uid)
             }
-            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: "") }
+            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: AUTH_ERROR_MSG) }
     }
 }
 

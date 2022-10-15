@@ -1,5 +1,6 @@
 package com.elizav.mvishopping.ui.products.state
 
+import com.elizav.mvishopping.domain.model.AppException.Companion.LOADING_ERROR_MSG
 import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.elizav.mvishopping.ui.baseList.state.ListAction
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
@@ -22,6 +23,6 @@ class ProductsListSideEffects @Inject constructor(
         { actions, state ->
             productsRepository.observeProducts(state().clientId).map<ListAction> {
                 ListAction.LoadedAction(it.sortByName(state().isDesc))
-            }.onErrorReturn { ListAction.ErrorAction(it.message ?: "") }
+            }.onErrorReturn { ListAction.ErrorAction(it.message ?: LOADING_ERROR_MSG) }
         }
 }

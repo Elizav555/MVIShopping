@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentProductsListBinding
 import com.elizav.mvishopping.di.ProductsListSideEffects
 import com.elizav.mvishopping.domain.model.Product
@@ -69,7 +70,7 @@ class ProductsListFragment(clientId: String) : BaseListFragment(clientId) {
     private fun changeProductDialog(position: Int? = null) {
         val productOldName = position?.let { currentState.products?.getOrNull(it) }?.name
         ChangeProductDialog(productOldName, position)
-            .show(childFragmentManager, "dialog")
+            .show(childFragmentManager, getString(R.string.dialog_tag))
     }
 
     fun changeProductName(newName: String, position: Int?) {

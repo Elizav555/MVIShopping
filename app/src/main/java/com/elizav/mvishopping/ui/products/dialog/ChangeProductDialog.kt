@@ -6,16 +6,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import com.elizav.mvishopping.R
-import com.elizav.mvishopping.databinding.DialogAddProductBinding
+import com.elizav.mvishopping.databinding.DialogChangeProductBinding
 import com.elizav.mvishopping.ui.products.ProductsListFragment
 
 class ChangeProductDialog(
     private val productOldName: String? = null,
     private val position: Int? = null
 ) : DialogFragment() {
-    private lateinit var binding: DialogAddProductBinding
+    private lateinit var binding: DialogChangeProductBinding
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogAddProductBinding.inflate(layoutInflater)
+        binding = DialogChangeProductBinding.inflate(layoutInflater)
 
         with(binding) {
             return activity?.let {

@@ -3,6 +3,7 @@ package com.elizav.mvishopping.data.client
 import com.elizav.mvishopping.data.client.ClientMapper.toData
 import com.elizav.mvishopping.data.client.ClientMapper.toDomain
 import com.elizav.mvishopping.domain.client.ClientsRepository
+import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.Client
 import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.utils.Constants
@@ -46,7 +47,7 @@ class ClientsRepositoryImpl @Inject constructor(
                                 documentSnapshot.toObject<ClientData>()
                                     ?.toDomain(documentSnapshot.id)
                             })
-                    } ?: emitter.onError(Exception())
+                    } ?: emitter.onError(AppException.LoadingErrorException())
                 }
             }
         }

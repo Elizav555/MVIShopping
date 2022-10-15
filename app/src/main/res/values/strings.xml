@@ -24,4 +24,5 @@
     <string name="message_delete">Are you sure you wanna delete this product? This action cannot be undone</string>
     <string name="delete_cart">Delete from cart</string>
     <string name="message_delete_cart">Are you sure you wanna remove this product from cart?</string>
+    <string name="dialog_tag">dialog</string>
 </resources>
