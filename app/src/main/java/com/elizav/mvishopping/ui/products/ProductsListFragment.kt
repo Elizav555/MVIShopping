@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentProductsListBinding
 import com.elizav.mvishopping.di.ProductsListSideEffects
-import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.baseList.state.ListReducer
 import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
@@ -75,14 +74,7 @@ class ProductsListFragment(clientId: String) : BaseListFragment(clientId) {
 
     fun changeProductName(newName: String, position: Int?) {
         if (position == null || currentState.products?.getOrNull(position) == null) {
-            val id = currentState.products?.size ?: 0
-            updateProduct(
-                 Product(
-                    id = id,
-                    name = newName,
-                    isPurchased = false
-                )
-            )
+            addProduct(newName)
         } else {
             currentState.products?.getOrNull(position)?.let {
                 updateProduct(

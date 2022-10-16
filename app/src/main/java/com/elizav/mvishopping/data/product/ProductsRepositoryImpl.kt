@@ -25,7 +25,7 @@ class ProductsRepositoryImpl @Inject constructor(db: FirebaseFirestore) :
                     emitter.onSuccess(
                         result.documents.mapNotNull { documentSnapshot ->
                             documentSnapshot.toObject<ProductData>()
-                                ?.toDomain(documentSnapshot.id.toIntOrNull() ?: 0)
+                                ?.toDomain(documentSnapshot.id)
                         })
                 }.addOnFailureListener { e ->
                     emitter.onError(e)
@@ -44,7 +44,7 @@ class ProductsRepositoryImpl @Inject constructor(db: FirebaseFirestore) :
                             emitter.onNext(
                                 result.documents.mapNotNull { documentSnapshot ->
                                     documentSnapshot.toObject<ProductData>()
-                                        ?.toDomain(documentSnapshot.id.toIntOrNull() ?: 0)
+                                        ?.toDomain(documentSnapshot.id)
                                 })
                         } ?: emitter.onError(AppException.LoadingErrorException())
                     }
@@ -57,7 +57,7 @@ class ProductsRepositoryImpl @Inject constructor(db: FirebaseFirestore) :
             clientsCollection.document(clientId).collection(PRODUCTS).document(productId).get()
                 .addOnSuccessListener { documentSnapshot ->
                     documentSnapshot.toObject<ProductData>()
-                        ?.toDomain(documentSnapshot.id.toIntOrNull() ?: 0)?.let {
+                        ?.toDomain(documentSnapshot.id)?.let {
                             emitter.onSuccess(
                                 it
                             )
@@ -68,10 +68,20 @@ class ProductsRepositoryImpl @Inject constructor(db: FirebaseFirestore) :
         }
     }
 
-    override fun addProduct(clientId: String, product: Product): Single<Boolean> =
+    override fun addProduct(clientId: String, productName: String): Single<String> =
+        Single.create { emitter ->
+            clientsCollection.document(clientId).collection(PRODUCTS).add(ProductData(productName))
+                .addOnSuccessListener {
+                    emitter.onSuccess(it.id)
+                }.addOnFailureListener { ex ->
+                    emitter.onError(ex)
+                }
+        }
+
+    override fun updateProduct(clientId: String, product: Product): Single<Boolean> =
         Single.create { emitter ->
             clientsCollection.document(clientId).collection(PRODUCTS)
-                .document(product.id.toString()).set(product.toData())
+                .document(product.id).set(product.toData())
                 .addOnSuccessListener {
                     emitter.onSuccess(true)
                 }.addOnFailureListener { ex ->
@@ -88,5 +98,4 @@ class ProductsRepositoryImpl @Inject constructor(db: FirebaseFirestore) :
                     emitter.onError(ex)
                 }
         }
-
 }

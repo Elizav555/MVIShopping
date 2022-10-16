@@ -7,5 +7,6 @@ sealed class ListAction {
     data class ErrorAction(val errorMsg: String) : ListAction()
     data class SortAction(val isDesc: Boolean) : ListAction()
     data class UpdateProductAction(val updatedProduct: Product) : ListAction()
-    data class DeleteProductAction(val productId: Int) : ListAction()
+    data class AddProductAction(val productName: String) : ListAction()
+    data class DeleteProductAction(val productId: String) : ListAction()
 }

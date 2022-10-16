@@ -4,7 +4,7 @@ import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.data.product.Product as ProductData
 
 object ProductMapper {
-    fun ProductData.toDomain(id:Int) = Product(
+    fun ProductData.toDomain(id: String) = Product(
         id = id,
         name = name,
         isPurchased = isPurchased

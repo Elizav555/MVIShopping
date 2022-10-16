@@ -8,6 +8,7 @@ interface ProductsRepository {
     fun getAllProducts(clientId: String): Single<List<Product>>
     fun observeProducts(clientId: String): Observable<List<Product>>
     fun getProduct(clientId: String, productId: String): Single<Product>
-    fun addProduct(clientId: String, product: Product): Single<Boolean>
+    fun addProduct(clientId: String, productName: String): Single<String>
+    fun updateProduct(clientId: String, product: Product): Single<Boolean>
     fun deleteProduct(clientId: String, productId: String): Single<Boolean>
 }

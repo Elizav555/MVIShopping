@@ -27,7 +27,7 @@ class ChangeProductDialog(
                 val dialog = AlertDialog.Builder(it).setView(root)
                     .setPositiveButton(submitBtnText) { _, _ ->
                         (parentFragment as ProductsListFragment).changeProductName(
-                            etName.text.toString(), position
+                            etName.text.toString().trim(), position
                         )
                     }
                     .setNegativeButton(getString(R.string.cancel)) { _, _ ->

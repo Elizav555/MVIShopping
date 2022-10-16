@@ -15,7 +15,7 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
         { actions, state ->
             actions.ofType<ListAction.SortAction>()
                 .switchMap {
-                    Observable.create<ListAction> { emitter ->
+                    Observable.create { emitter ->
                         state().products?.let {
                             emitter.onNext(
                                 ListAction.LoadedAction(
@@ -29,10 +29,21 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
                 }
         }
 
+    open fun addProductSideEffect(): SideEffect<ListState, ListAction> = { actions, state ->
+        actions.ofType<ListAction.AddProductAction>()
+            .switchMap { addAction ->
+                productsRepository.addProduct(state().clientId, addAction.productName)
+                    .toObservable()
+                    .filter { it.isBlank() }
+                    .map { return@map ListAction.ErrorAction(UPDATE_ERROR_MSG) }
+                    .onErrorReturn { ListAction.ErrorAction(it.message ?: UPDATE_ERROR_MSG) }
+            }
+    }
+
     open fun updateProductSideEffect(): SideEffect<ListState, ListAction> = { actions, state ->
         actions.ofType<ListAction.UpdateProductAction>()
             .switchMap { updateAction ->
-                productsRepository.addProduct(state().clientId, updateAction.updatedProduct)
+                productsRepository.updateProduct(state().clientId, updateAction.updatedProduct)
                     .toObservable().filter { !it }.map<ListAction> {
                         ListAction.ErrorAction(UPDATE_ERROR_MSG)
                     }.onErrorReturn { ListAction.ErrorAction(it.message ?: UPDATE_ERROR_MSG) }
@@ -44,7 +55,7 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
             .switchMap { deleteAction ->
                 productsRepository.deleteProduct(
                     state().clientId,
-                    deleteAction.productId.toString()
+                    deleteAction.productId
                 )
                     .toObservable().filter { !it }.map<ListAction> {
                         ListAction.ErrorAction(DELETE_ERROR_MSG)

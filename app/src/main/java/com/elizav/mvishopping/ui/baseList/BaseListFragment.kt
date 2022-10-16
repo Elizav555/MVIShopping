@@ -133,4 +133,8 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
     open fun updateProduct(updatedProduct: Product) {
         actions.onNext(ListAction.UpdateProductAction(updatedProduct))
     }
+
+    open fun addProduct(productName:String) {
+        actions.onNext(ListAction.AddProductAction(productName))
+    }
 }
