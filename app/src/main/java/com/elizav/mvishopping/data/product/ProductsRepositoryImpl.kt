@@ -1,12 +1,12 @@
 package com.elizav.mvishopping.data.product
 
+import com.elizav.mvishopping.data.client.ClientsRepositoryImpl.Companion.CLIENTS
+import com.elizav.mvishopping.data.client.ClientsRepositoryImpl.Companion.PRODUCTS
 import com.elizav.mvishopping.data.product.ProductMapper.toData
 import com.elizav.mvishopping.data.product.ProductMapper.toDomain
 import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.Product
 import com.elizav.mvishopping.domain.product.ProductsRepository
-import com.elizav.mvishopping.utils.Constants.CLIENTS
-import com.elizav.mvishopping.utils.Constants.PRODUCTS
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import io.reactivex.Observable
