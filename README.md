@@ -1,5 +1,5 @@
 # [MVIShopping](https://github.com/Elizav555/MVIShopping) 
-This app was my first attempt to work with RxRedux
+This app was my first attempt to work with RxRedux for MVI
 
 ## Features
 - Google one tap signIn
