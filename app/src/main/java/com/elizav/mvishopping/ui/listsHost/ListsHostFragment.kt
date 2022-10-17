@@ -150,15 +150,17 @@ class ListsHostFragment : Fragment() {
     private fun render(
         state: HostState
     ) {
+        binding.tabLayout.getTabAt(CART_POSITION)?.apply {
+            if (state.cartCount != 0) {
+                orCreateBadge.number = state.cartCount
+            } else removeBadge()
+        }
         when {
             state.isLogoutSuccess -> {
                 navigateToAuth()
             }
             state.errorMsg != null -> {
                 showSnackbar(state.errorMsg)
-            }
-            state.cartCount != 0 -> {
-                binding.tabLayout.getTabAt(CART_POSITION)?.orCreateBadge?.number = state.cartCount
             }
         }
     }
