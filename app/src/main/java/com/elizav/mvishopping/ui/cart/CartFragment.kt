@@ -45,6 +45,7 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
             cartSideEffects.sideEffects,
             ListReducer()
         )
+            .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
         initAdapter(null, null)

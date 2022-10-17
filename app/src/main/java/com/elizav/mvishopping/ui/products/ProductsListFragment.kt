@@ -44,6 +44,7 @@ class ProductsListFragment(clientId: String) : BaseListFragment(clientId) {
             productsListSideEffects.sideEffects,
             ListReducer()
         )
+            .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
         initAdapter(::changeProductDialog, ::checkedFunc)

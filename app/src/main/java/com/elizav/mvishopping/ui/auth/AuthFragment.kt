@@ -61,6 +61,7 @@ class AuthFragment : Fragment() {
             authSideEffects.sideEffects,
             AuthReducer()
         )
+            .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
         actions.onNext(AuthAction.CheckAuthAction)
