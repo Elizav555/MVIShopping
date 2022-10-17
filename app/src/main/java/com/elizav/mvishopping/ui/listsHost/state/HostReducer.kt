@@ -8,15 +8,20 @@ class HostReducer : Reducer<HostState, HostAction> {
         when (action) {
             HostAction.LogoutAction -> state.copy(
                 errorMsg = null,
-                isSuccess = false
+                isLogoutSuccess = false
             )
             is HostAction.ErrorAction -> state.copy(
                 errorMsg = action.errorMsg,
-                isSuccess = false
+                isLogoutSuccess = false
             )
             HostAction.SuccessLogoutAction -> state.copy(
                 errorMsg = null,
-                isSuccess = true
+                isLogoutSuccess = true
+            )
+            is HostAction.CartUpdatedAction -> state.copy(
+                errorMsg = null,
+                isLogoutSuccess = false,
+                cartCount = action.cartCount
             )
         }
 }

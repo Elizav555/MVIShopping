@@ -3,7 +3,7 @@ package com.elizav.mvishopping.ui.listsHost
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
-import com.elizav.mvishopping.ui.utils.getFragmentsCollection
+import com.elizav.mvishopping.ui.utils.FragmentsCollection.getFragmentsCollection
 
 class ListsAdapter(fragment: Fragment, private val clientId: String) :
     FragmentStateAdapter(fragment) {
@@ -11,7 +11,7 @@ class ListsAdapter(fragment: Fragment, private val clientId: String) :
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment {
-        val fragment = getFragmentsCollection(clientId = clientId).getOrNull(position)?.listFragment
+        val fragment = getFragmentsCollection(clientId = clientId)[position]?.listFragment
             ?: throw IllegalArgumentException()
         fragments.add(fragment)
         return fragment

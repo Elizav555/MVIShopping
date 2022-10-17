@@ -1,6 +1,8 @@
 package com.elizav.mvishopping.ui.listsHost.state
 
 data class HostState(
+    val clientId: String,
     val errorMsg: String? = null,
-    val isSuccess:Boolean = false
+    val isLogoutSuccess: Boolean = false,
+    val cartCount: Int = 0
 )

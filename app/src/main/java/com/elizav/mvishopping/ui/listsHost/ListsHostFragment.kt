@@ -22,8 +22,9 @@ import com.elizav.mvishopping.ui.listsHost.state.HostReducer
 import com.elizav.mvishopping.ui.listsHost.state.HostSideEffects
 import com.elizav.mvishopping.ui.listsHost.state.HostState
 import com.elizav.mvishopping.ui.utils.DialogParams
+import com.elizav.mvishopping.ui.utils.FragmentsCollection.CART_POSITION
+import com.elizav.mvishopping.ui.utils.FragmentsCollection.getFragmentsCollection
 import com.elizav.mvishopping.ui.utils.ShowDialog.showDialog
-import com.elizav.mvishopping.ui.utils.getFragmentsCollection
 import com.freeletics.rxredux.reduxStore
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -81,17 +82,18 @@ class ListsHostFragment : Fragment() {
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             val fragmentParams =
-                getFragmentsCollection(args.clientId).getOrNull(position)
+                getFragmentsCollection(args.clientId)[position]
                     ?: throw IllegalArgumentException()
             tab.text = getString(fragmentParams.labelRes)
             tab.icon = ResourcesCompat.getDrawable(resources, fragmentParams.iconRes, null)
         }.attach()
 
         compositeDisposable += actions.reduxStore(
-            HostState(),
+            HostState(args.clientId),
             hostSideEffects.sideEffects,
             HostReducer()
         )
+            .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
 
@@ -149,11 +151,14 @@ class ListsHostFragment : Fragment() {
         state: HostState
     ) {
         when {
-            state.isSuccess -> {
+            state.isLogoutSuccess -> {
                 navigateToAuth()
             }
             state.errorMsg != null -> {
                 showSnackbar(state.errorMsg)
+            }
+            state.cartCount != 0 -> {
+                binding.tabLayout.getTabAt(CART_POSITION)?.orCreateBadge?.number = state.cartCount
             }
         }
     }
