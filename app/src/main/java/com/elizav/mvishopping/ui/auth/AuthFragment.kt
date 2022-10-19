@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentAuthBinding
+import com.elizav.mvishopping.domain.model.AppException
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.elizav.mvishopping.store.authState.AuthAction
 import com.elizav.mvishopping.store.authState.AuthReducer
 import com.elizav.mvishopping.store.authState.AuthSideEffects
@@ -40,6 +42,9 @@ class AuthFragment : Fragment() {
     @Inject
     lateinit var authReducer: AuthReducer
 
+    @Inject
+    lateinit var errorEvent: ErrorEvent
+
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) }
@@ -68,11 +73,13 @@ class AuthFragment : Fragment() {
         binding.btnSignIn.setOnClickListener {
             actions.onNext(AuthAction.SignInAction)
         }
+        errorEvent.register(this, ::handleError)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.clear()
+        errorEvent.unregister(this)
     }
 
     private fun render(
@@ -82,10 +89,6 @@ class AuthFragment : Fragment() {
         when {
             state.currentClientId != null -> {
                 navigateToList(state.currentClientId)
-            }
-            state.errorMsg != null -> {
-                showLoading(false)
-                showSnackbar(state.errorMsg)
             }
             state.beginSignInResult != null -> {
                 launcher.launch(
@@ -99,6 +102,11 @@ class AuthFragment : Fragment() {
         findNavController().navigate(
             AuthFragmentDirections.actionAuthFragmentToListsHostFragment(clientId)
         )
+    }
+
+    private fun handleError(ex: AppException) {
+        showLoading(false)
+        showSnackbar(ex.message)
     }
 
     private fun showLoading(isLoading: Boolean = true) {

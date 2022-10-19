@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentCartBinding
 import com.elizav.mvishopping.di.CartSideEffects
-import com.elizav.mvishopping.ui.baseList.BaseListFragment
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.elizav.mvishopping.store.listState.ListReducer
 import com.elizav.mvishopping.store.listState.ListSideEffects
+import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.dialog.DialogParams
 import com.elizav.mvishopping.ui.dialog.ShowDialog
 import com.freeletics.rxredux.reduxStore
@@ -21,6 +22,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CartFragment(clientId: String) : BaseListFragment(clientId) {
     private lateinit var binding: FragmentCartBinding
+
+    @Inject
+    lateinit var errorEvent: ErrorEvent
 
     @Inject
     @CartSideEffects
@@ -48,11 +52,14 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
         initAdapter(null, null)
+
+        errorEvent.register(this, ::handleError)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.clear()
+        errorEvent.unregister(this)
     }
 
     override fun deleteProduct(position: Int) {

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentProductsListBinding
 import com.elizav.mvishopping.di.ProductsListSideEffects
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.store.listState.ListReducer
 import com.elizav.mvishopping.store.listState.ListSideEffects
@@ -24,6 +25,9 @@ class ProductsListFragment(clientId: String) : BaseListFragment(clientId) {
     @Inject
     @ProductsListSideEffects
     lateinit var productsListSideEffects: ListSideEffects
+
+    @Inject
+    lateinit var errorEvent: ErrorEvent
 
     override val listSideEffects: ListSideEffects
         get() = productsListSideEffects
@@ -50,11 +54,14 @@ class ProductsListFragment(clientId: String) : BaseListFragment(clientId) {
         binding.fabAdd.setOnClickListener {
             changeProductDialog()
         }
+
+        errorEvent.register(this,::handleError)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.clear()
+        errorEvent.unregister(this)
     }
 
     private fun checkedFunc(position: Int, isChecked: Boolean) =

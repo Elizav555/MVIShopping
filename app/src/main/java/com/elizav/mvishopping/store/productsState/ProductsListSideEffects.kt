@@ -1,6 +1,7 @@
 package com.elizav.mvishopping.store.productsState
 
-import com.elizav.mvishopping.domain.model.AppException.Companion.LOADING_ERROR_MSG
+import com.elizav.mvishopping.domain.model.AppException
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.elizav.mvishopping.store.listState.ListAction
 import com.elizav.mvishopping.store.listState.ListSideEffects
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 class ProductsListSideEffects @Inject constructor(
     private val productsRepository: ProductsRepository,
-) : ListSideEffects(productsRepository) {
+    private val errorEvent: ErrorEvent
+) : ListSideEffects(productsRepository, errorEvent) {
     override val sideEffects: List<SideEffect<ListState, ListAction>> = listOf(
         sortProductsSideEffect(),
         addProductSideEffect(),
@@ -24,6 +26,12 @@ class ProductsListSideEffects @Inject constructor(
         { actions, state ->
             productsRepository.observeProducts(state().clientId).map<ListAction> {
                 ListAction.LoadedAction(it.sortByName(state().isDesc))
-            }.onErrorReturn { ListAction.ErrorAction(it.message ?: LOADING_ERROR_MSG) }
+            }.doOnError { error ->
+                errorEvent.publish(
+                    AppException.LoadingErrorException(
+                        error.message ?: AppException.LOADING_ERROR_MSG
+                    )
+                )
+            }
         }
 }

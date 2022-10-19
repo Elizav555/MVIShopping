@@ -13,5 +13,4 @@ sealed class AuthAction {
     ) : AuthAction()
 
     data class SignedInAction(val clientId: String) : AuthAction()
-    data class ErrorAction(val errorMsg: String) : AuthAction()
 }

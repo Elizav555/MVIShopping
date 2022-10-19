@@ -8,14 +8,15 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.elizav.mvishopping.R
+import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.Product
-import com.elizav.mvishopping.ui.baseList.list.ProductAdapter
 import com.elizav.mvishopping.store.listState.ListAction
 import com.elizav.mvishopping.store.listState.ListSideEffects
 import com.elizav.mvishopping.store.listState.ListState
+import com.elizav.mvishopping.ui.baseList.list.ProductAdapter
 import com.elizav.mvishopping.ui.dialog.DialogParams
-import com.elizav.mvishopping.ui.utils.MySwipeCallback
 import com.elizav.mvishopping.ui.dialog.ShowDialog
+import com.elizav.mvishopping.ui.utils.MySwipeCallback
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.disposables.CompositeDisposable
@@ -43,9 +44,6 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
             state.products != null -> {
                 updateList(state.products)
             }
-            state.errorMsg != null -> {
-                showSnackbar(state.errorMsg)
-            }
         }
     }
 
@@ -54,6 +52,11 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
             findViewById<RecyclerView>(R.id.recycler_view).isVisible = !isLoading
             findViewById<ProgressBar>(R.id.progressBar).isVisible = isLoading
         }
+    }
+
+    fun handleError(ex: AppException) {
+        showLoading(false)
+        showSnackbar(ex.message)
     }
 
     open fun showSnackbar(text: String) = view?.let {
@@ -84,7 +87,7 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
                 val swipeToDeleteCallback =
                     object : MySwipeCallback(requireContext()) {
                         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                           deleteProduct(viewHolder.adapterPosition)
+                            deleteProduct(viewHolder.adapterPosition)
                         }
 
                         override fun onMove(
@@ -133,7 +136,7 @@ abstract class BaseListFragment(clientId: String) : Fragment() {
         actions.onNext(ListAction.UpdateProductAction(updatedProduct))
     }
 
-    open fun addProduct(productName:String) {
+    open fun addProduct(productName: String) {
         actions.onNext(ListAction.AddProductAction(productName))
     }
 }

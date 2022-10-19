@@ -16,15 +16,17 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentListsHostBinding
-import com.elizav.mvishopping.ui.baseList.BaseListFragment
+import com.elizav.mvishopping.domain.model.AppException
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.elizav.mvishopping.store.hostState.HostAction
 import com.elizav.mvishopping.store.hostState.HostReducer
 import com.elizav.mvishopping.store.hostState.HostSideEffects
 import com.elizav.mvishopping.store.hostState.HostState
+import com.elizav.mvishopping.ui.baseList.BaseListFragment
 import com.elizav.mvishopping.ui.dialog.DialogParams
+import com.elizav.mvishopping.ui.dialog.ShowDialog.showDialog
 import com.elizav.mvishopping.ui.listsHost.FragmentsCollection.CART_POSITION
 import com.elizav.mvishopping.ui.listsHost.FragmentsCollection.getFragmentsCollection
-import com.elizav.mvishopping.ui.dialog.ShowDialog.showDialog
 import com.freeletics.rxredux.reduxStore
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -47,6 +49,9 @@ class ListsHostFragment : Fragment() {
 
     @Inject
     lateinit var hostSideEffects: HostSideEffects
+
+    @Inject
+    lateinit var errorEvent: ErrorEvent
 
     private lateinit var listsAdapter: ListsAdapter
     private val onPageChangeListenerCallback = object : ViewPager2.OnPageChangeCallback() {
@@ -123,12 +128,15 @@ class ListsHostFragment : Fragment() {
             }
         }, viewLifecycleOwner)
         menuHost.invalidateMenu()
+
+        errorEvent.register(this, ::handleError)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding.viewPager.unregisterOnPageChangeCallback(onPageChangeListenerCallback)
         compositeDisposable.clear()
+        errorEvent.unregister(this)
     }
 
     private fun showLogoutDialog() = activity?.let {
@@ -157,9 +165,6 @@ class ListsHostFragment : Fragment() {
             state.isLogoutSuccess -> {
                 navigateToAuth()
             }
-            state.errorMsg != null -> {
-                showSnackbar(state.errorMsg)
-            }
         }
     }
 
@@ -167,6 +172,10 @@ class ListsHostFragment : Fragment() {
         findNavController().navigate(
             ListsHostFragmentDirections.actionListsHostFragmentToAuthFragment()
         )
+    }
+
+    private fun handleError(ex: AppException) {
+        showSnackbar(ex.message)
     }
 
     private fun showSnackbar(text: String) = Snackbar.make(
