@@ -1,8 +1,10 @@
 package com.elizav.mvishopping.store.hostState
 
 import com.elizav.mvishopping.domain.auth.AuthRepository
+import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.AppException.Companion.LOADING_ERROR_MSG
 import com.elizav.mvishopping.domain.model.AppException.Companion.LOGOUT_ERROR_MSG
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.rxkotlin.ofType
@@ -10,7 +12,8 @@ import javax.inject.Inject
 
 class HostSideEffects @Inject constructor(
     private val authRepository: AuthRepository,
-    private val productsRepository: ProductsRepository
+    private val productsRepository: ProductsRepository,
+    private val errorEvent: ErrorEvent
 ) {
     val sideEffects = listOf(
         logoutSideEffect(),
@@ -26,9 +29,9 @@ class HostSideEffects @Inject constructor(
                     ?.map<HostAction> {
                         HostAction.SuccessLogoutAction
                     }
-                    ?.onErrorReturn { error ->
-                        HostAction.ErrorAction(
-                            error.message ?: LOGOUT_ERROR_MSG
+                    ?.doOnError { error ->
+                        errorEvent.publish(
+                            AppException.LogoutErrorException(error.message ?: LOGOUT_ERROR_MSG)
                         )
                     }
             }
@@ -48,9 +51,9 @@ class HostSideEffects @Inject constructor(
                 .distinctUntilChanged()
                 .map<HostAction> { cartCount ->
                     HostAction.CartUpdatedAction(cartCount)
-                }.onErrorReturn { error ->
-                    HostAction.ErrorAction(
-                        error.message ?: LOADING_ERROR_MSG
+                }.doOnError { error ->
+                    errorEvent.publish(
+                        AppException.LoadingErrorException(error.message ?: LOADING_ERROR_MSG)
                     )
                 }
         }

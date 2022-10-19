@@ -2,7 +2,9 @@ package com.elizav.mvishopping.store.authState
 
 import android.content.Intent
 import com.elizav.mvishopping.domain.auth.AuthRepository
+import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.AppException.Companion.AUTH_ERROR_MSG
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -10,8 +12,9 @@ import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 
-class AuthSideEffects (
+class AuthSideEffects(
     private val authRepository: AuthRepository,
+    private val errorEvent: ErrorEvent
 ) {
     val sideEffects = listOf(
         checkAuthSideEffect(),
@@ -27,9 +30,9 @@ class AuthSideEffects (
                     ?.map<AuthAction> { result ->
                         AuthAction.SignedInAction(result.uid)
                     }
-                    ?.onErrorReturn { error ->
-                        AuthAction.ErrorAction(
-                            error.message ?: AUTH_ERROR_MSG
+                    ?.doOnError { error ->
+                        errorEvent.publish(
+                            AppException.AuthErrorException(error.message ?: AUTH_ERROR_MSG)
                         )
                     }
                     ?: Single.create { emitter -> emitter.onSuccess(AuthAction.LoadedAction) }
@@ -51,7 +54,11 @@ class AuthSideEffects (
             .map<AuthAction> { result ->
                 AuthAction.BeginSignInResultAction(result)
             }
-            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: AUTH_ERROR_MSG) }
+            .doOnError { error ->
+                errorEvent.publish(
+                    AppException.AuthErrorException(error.message ?: AUTH_ERROR_MSG)
+                )
+            }
     }
 
     private fun signInWithCredSideEffect(): SideEffect<AuthState, AuthAction> = { actions, state ->
@@ -69,7 +76,11 @@ class AuthSideEffects (
             .map<AuthAction> { result ->
                 AuthAction.SignedInAction(clientId = result.uid)
             }
-            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: AUTH_ERROR_MSG) }
+            .doOnError { error ->
+                errorEvent.publish(
+                    AppException.AuthErrorException(error.message ?: AUTH_ERROR_MSG)
+                )
+            }
     }
 }
 

@@ -1,14 +1,17 @@
 package com.elizav.mvishopping.store.listState
 
-import com.elizav.mvishopping.domain.model.AppException.Companion.DELETE_ERROR_MSG
+import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.AppException.Companion.UPDATE_ERROR_MSG
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.elizav.mvishopping.ui.utils.ProductListExtension.sortByName
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType
 
-abstract class ListSideEffects(private val productsRepository: ProductsRepository) {
+abstract class ListSideEffects(
+    private val productsRepository: ProductsRepository, private val errorEvent: ErrorEvent
+) {
     abstract val sideEffects: List<SideEffect<ListState, ListAction>>
 
     open fun sortProductsSideEffect(): SideEffect<ListState, ListAction> =
@@ -24,7 +27,9 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
                                     )
                                 )
                             )
-                        } ?: emitter.onError(Exception())
+                        } ?: errorEvent.publish(
+                            AppException.LoadingErrorException()
+                        )
                     }
                 }
         }
@@ -33,10 +38,14 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
         actions.ofType<ListAction.AddProductAction>()
             .switchMap { addAction ->
                 productsRepository.addProduct(state().clientId, addAction.productName)
-                    .toObservable()
-                    .filter { it.isBlank() }
-                    .map { return@map ListAction.ErrorAction(UPDATE_ERROR_MSG) }
-                    .onErrorReturn { ListAction.ErrorAction(it.message ?: UPDATE_ERROR_MSG) }
+                    .doOnError { error ->
+                        errorEvent.publish(
+                            AppException.UpdateErrorException(
+                                error.message ?: UPDATE_ERROR_MSG
+                            )
+                        )
+                    }
+                Observable.empty()
             }
     }
 
@@ -44,9 +53,14 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
         actions.ofType<ListAction.UpdateProductAction>()
             .switchMap { updateAction ->
                 productsRepository.updateProduct(state().clientId, updateAction.updatedProduct)
-                    .toObservable().filter { !it }.map<ListAction> {
-                        ListAction.ErrorAction(UPDATE_ERROR_MSG)
-                    }.onErrorReturn { ListAction.ErrorAction(it.message ?: UPDATE_ERROR_MSG) }
+                    .toObservable().filter { !it }.doOnError { error ->
+                        errorEvent.publish(
+                            AppException.UpdateErrorException(
+                                error.message ?: UPDATE_ERROR_MSG
+                            )
+                        )
+                    }
+                Observable.empty()
             }
     }
 
@@ -57,9 +71,14 @@ abstract class ListSideEffects(private val productsRepository: ProductsRepositor
                     state().clientId,
                     deleteAction.productId
                 )
-                    .toObservable().filter { !it }.map<ListAction> {
-                        ListAction.ErrorAction(DELETE_ERROR_MSG)
-                    }.onErrorReturn { ListAction.ErrorAction(it.message ?: DELETE_ERROR_MSG) }
+                    .toObservable().filter { !it }.doOnError { error ->
+                        errorEvent.publish(
+                            AppException.UpdateErrorException(
+                                error.message ?: UPDATE_ERROR_MSG
+                            )
+                        )
+                    }
+                Observable.empty()
             }
     }
 

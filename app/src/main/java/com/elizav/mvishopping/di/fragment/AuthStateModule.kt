@@ -1,6 +1,7 @@
 package com.elizav.mvishopping.di.fragment
 
 import com.elizav.mvishopping.domain.auth.AuthRepository
+import com.elizav.mvishopping.domain.model.ErrorEvent
 import com.elizav.mvishopping.store.authState.AuthReducer
 import com.elizav.mvishopping.store.authState.AuthSideEffects
 import com.elizav.mvishopping.store.authState.AuthState
@@ -19,6 +20,6 @@ class AuthStateModule {
     fun provideAuthReducer(): AuthReducer = AuthReducer()
 
     @Provides
-    fun provideAuthSideEffects(authRepository: AuthRepository): AuthSideEffects =
-        AuthSideEffects(authRepository)
+    fun provideAuthSideEffects(authRepository: AuthRepository, errorEvent: ErrorEvent): AuthSideEffects =
+        AuthSideEffects(authRepository,errorEvent)
 }
