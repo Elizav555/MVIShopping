@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.baseList.state
+package com.elizav.mvishopping.store.listState
 
 import com.elizav.mvishopping.domain.model.Product
 

@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.baseList.state
+package com.elizav.mvishopping.store.listState
 
 class ListReducer : (ListState, ListAction) -> ListState {
     override fun invoke(state: ListState, action: ListAction): ListState =

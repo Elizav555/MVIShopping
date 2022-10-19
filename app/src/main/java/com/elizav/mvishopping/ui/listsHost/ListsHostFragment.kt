@@ -17,14 +17,14 @@ import androidx.viewpager2.widget.ViewPager2
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentListsHostBinding
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
-import com.elizav.mvishopping.ui.listsHost.state.HostAction
-import com.elizav.mvishopping.ui.listsHost.state.HostReducer
-import com.elizav.mvishopping.ui.listsHost.state.HostSideEffects
-import com.elizav.mvishopping.ui.listsHost.state.HostState
-import com.elizav.mvishopping.ui.utils.DialogParams
-import com.elizav.mvishopping.ui.utils.FragmentsCollection.CART_POSITION
-import com.elizav.mvishopping.ui.utils.FragmentsCollection.getFragmentsCollection
-import com.elizav.mvishopping.ui.utils.ShowDialog.showDialog
+import com.elizav.mvishopping.store.hostState.HostAction
+import com.elizav.mvishopping.store.hostState.HostReducer
+import com.elizav.mvishopping.store.hostState.HostSideEffects
+import com.elizav.mvishopping.store.hostState.HostState
+import com.elizav.mvishopping.ui.dialog.DialogParams
+import com.elizav.mvishopping.ui.listsHost.FragmentsCollection.CART_POSITION
+import com.elizav.mvishopping.ui.listsHost.FragmentsCollection.getFragmentsCollection
+import com.elizav.mvishopping.ui.dialog.ShowDialog.showDialog
 import com.freeletics.rxredux.reduxStore
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -37,8 +37,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ListsHostFragment : Fragment() {
-    private var _binding: FragmentListsHostBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentListsHostBinding
 
     private val actions = BehaviorSubject.create<HostAction>()
     private val compositeDisposable = CompositeDisposable()
@@ -68,7 +67,7 @@ class ListsHostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentListsHostBinding.inflate(inflater, container, false)
+        binding = FragmentListsHostBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -129,7 +128,6 @@ class ListsHostFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.viewPager.unregisterOnPageChangeCallback(onPageChangeListenerCallback)
-        _binding = null
         compositeDisposable.clear()
     }
 

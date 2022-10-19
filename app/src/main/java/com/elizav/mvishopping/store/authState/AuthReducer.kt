@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.auth.state
+package com.elizav.mvishopping.store.authState
 
 import com.freeletics.rxredux.Reducer
 

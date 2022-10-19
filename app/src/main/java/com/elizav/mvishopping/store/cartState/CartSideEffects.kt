@@ -1,14 +1,12 @@
-package com.elizav.mvishopping.ui.cart.state
+package com.elizav.mvishopping.store.cartState
 
 import com.elizav.mvishopping.domain.model.AppException.Companion.LOADING_ERROR_MSG
 import com.elizav.mvishopping.domain.product.ProductsRepository
-import com.elizav.mvishopping.ui.baseList.state.ListAction
-import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
-import com.elizav.mvishopping.ui.baseList.state.ListState
+import com.elizav.mvishopping.store.listState.ListAction
+import com.elizav.mvishopping.store.listState.ListSideEffects
+import com.elizav.mvishopping.store.listState.ListState
 import com.elizav.mvishopping.ui.utils.ProductListExtension.sortByName
 import com.freeletics.rxredux.SideEffect
-import io.reactivex.Observable
-import io.reactivex.rxkotlin.ofType
 import javax.inject.Inject
 
 class CartSideEffects @Inject constructor(

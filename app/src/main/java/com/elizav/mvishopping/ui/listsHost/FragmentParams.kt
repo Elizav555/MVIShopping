@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.utils
+package com.elizav.mvishopping.ui.listsHost
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes

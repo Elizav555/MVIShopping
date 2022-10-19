@@ -1,7 +1,5 @@
 package com.elizav.mvishopping.data.client
 
-import com.elizav.mvishopping.data.client.ClientMapper.toData
-import com.elizav.mvishopping.data.client.ClientMapper.toDomain
 import com.elizav.mvishopping.domain.client.ClientsRepository
 import com.elizav.mvishopping.domain.model.AppException
 import com.elizav.mvishopping.domain.model.Client
@@ -15,6 +13,7 @@ import com.elizav.mvishopping.data.client.Client as ClientData
 
 class ClientsRepositoryImpl @Inject constructor(
     db: FirebaseFirestore,
+    private val clientMapper: ClientMapper,
 ) : ClientsRepository {
     private val clientsCollection = db.collection(CLIENTS)
 
@@ -23,7 +22,9 @@ class ClientsRepositoryImpl @Inject constructor(
             clientsCollection.get().addOnSuccessListener { result ->
                 emitter.onSuccess(
                     result.documents.mapNotNull { documentSnapshot ->
-                        documentSnapshot.toObject<ClientData>()?.toDomain(documentSnapshot.id)
+                        documentSnapshot.toObject<ClientData>()?.let { clientData ->
+                            clientMapper.map(clientData, documentSnapshot.id)
+                        }
                     })
             }.addOnFailureListener { e ->
                 emitter.onError(e)
@@ -40,8 +41,9 @@ class ClientsRepositoryImpl @Inject constructor(
                     snapshot?.let { result ->
                         emitter.onNext(
                             result.documents.mapNotNull { documentSnapshot ->
-                                documentSnapshot.toObject<ClientData>()
-                                    ?.toDomain(documentSnapshot.id)
+                                documentSnapshot.toObject<ClientData>()?.let { clientData ->
+                                    clientMapper.map(clientData, documentSnapshot.id)
+                                }
                             })
                     } ?: emitter.onError(AppException.LoadingErrorException())
                 }
@@ -52,7 +54,11 @@ class ClientsRepositoryImpl @Inject constructor(
     override fun getClient(clientId: String): Single<Client> {
         return Single.create { emitter ->
             clientsCollection.document(clientId).get().addOnSuccessListener { documentSnapshot ->
-                documentSnapshot.toObject<ClientData>()?.toDomain(documentSnapshot.id)
+                documentSnapshot.toObject<ClientData>()?.let { clientData ->
+                    emitter.onSuccess(
+                        clientMapper.map(clientData, documentSnapshot.id)
+                    )
+                }
             }.addOnFailureListener { e ->
                 emitter.onError(e)
             }
@@ -60,7 +66,7 @@ class ClientsRepositoryImpl @Inject constructor(
     }
 
     override fun addClient(client: Client): Single<Boolean> = Single.create { emitter ->
-        clientsCollection.document(client.id).set(client.toData())
+        clientsCollection.document(client.id).set(clientMapper.map(client))
             .addOnSuccessListener {
                 emitter.onSuccess(true)
             }.addOnFailureListener { ex ->

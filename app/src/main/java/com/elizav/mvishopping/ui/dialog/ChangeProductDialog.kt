@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.products.dialog
+package com.elizav.mvishopping.ui.dialog
 
 import android.app.Dialog
 import android.os.Bundle

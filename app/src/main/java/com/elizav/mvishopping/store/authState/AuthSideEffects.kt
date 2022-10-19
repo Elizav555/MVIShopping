@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.auth.state
+package com.elizav.mvishopping.store.authState
 
 import android.content.Intent
 import com.elizav.mvishopping.domain.auth.AuthRepository
@@ -9,9 +9,8 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
-class AuthSideEffects @Inject constructor(
+class AuthSideEffects (
     private val authRepository: AuthRepository,
 ) {
     val sideEffects = listOf(

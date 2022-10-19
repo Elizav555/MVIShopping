@@ -1,6 +1,7 @@
 package com.elizav.mvishopping.data.auth
 
 import android.content.Intent
+import android.util.Log
 import com.elizav.mvishopping.data.client.ClientsRepositoryImpl.Companion.CLIENTS
 import com.elizav.mvishopping.data.client.ClientsRepositoryImpl.Companion.NAME
 import com.elizav.mvishopping.di.SignInRequest
@@ -10,49 +11,57 @@ import com.elizav.mvishopping.domain.model.AppException
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    private var oneTapClient: SignInClient,
+    private val oneTapClient: SignInClient,
     @SignInRequest
-    private var signInRequest: BeginSignInRequest,
+    private val signInRequest: BeginSignInRequest,
     @SignUpRequest
-    private var signUpRequest: BeginSignInRequest,
+    private val signUpRequest: BeginSignInRequest,
     private val db: FirebaseFirestore
 ) : AuthRepository {
     override val currentClient: FirebaseUser? get() = auth.currentUser
     override val isUserAuthenticated get() = auth.currentUser != null
 
-    private var authStateListener: FirebaseAuth.AuthStateListener? = null
+    private val signOutSubject = PublishSubject.create<Unit>()
 
-    override fun observeAuthState(): Observable<Boolean> {
-        return Observable.create<Boolean> { emitter ->
-            authStateListener = FirebaseAuth.AuthStateListener {
-                if (!emitter.isDisposed) emitter.onNext(it.currentUser != null)
-            }.apply {
+    private val currentAuthStateObserver = Observable.create<Boolean> { emitter ->
+        AuthStateListener { emitter.onNext(it.currentUser != null) }
+            .apply {
                 auth.addAuthStateListener(this)
-                emitter.setCancellable {
-                    auth.removeAuthStateListener(this)
-                }
+                emitter.setCancellable { auth.removeAuthStateListener(this) }
             }
-        }
     }
+        .share()
+        .takeUntil(signOutSubject)
+
+    override fun observeAuthState(): Observable<Boolean> = currentAuthStateObserver
+
 
     override fun oneTapSignInWithGoogle(): Single<BeginSignInResult> = Single.create { emitter ->
         oneTapClient.beginSignIn(signInRequest).addOnSuccessListener {
             emitter.onSuccess(it)
-        }.addOnFailureListener {
-            oneTapClient.beginSignIn(signUpRequest).addOnSuccessListener {
-                emitter.onSuccess(it)
-            }.addOnFailureListener {
-                emitter.onError(it)
+        }.addOnFailureListener { ex ->
+            if (ex is ApiException) {
+                Log.e("signUpFail", ex.message ?: "")
+                oneTapClient.beginSignIn(signUpRequest).addOnSuccessListener { beginSignInRes ->
+                    emitter.onSuccess(beginSignInRes)
+                }.addOnFailureListener { e ->
+                    emitter.onError(e)
+                }
+            } else {
+                emitter.onError(ex)
             }
         }
     }
@@ -74,8 +83,10 @@ class AuthRepositoryImpl @Inject constructor(
                                 emitter.onError(ex)
                             }
                     }
-                } else auth.currentUser?.let { emitter.onSuccess(it) }
-                    ?: emitter.onError(AppException.AuthErrorException())
+                } else {
+                    auth.currentUser?.let { emitter.onSuccess(it) }
+                        ?: emitter.onError(AppException.AuthErrorException())
+                }
             }.addOnFailureListener {
                 emitter.onError(it)
             }
@@ -84,7 +95,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun signOut(): Single<Boolean> = Single.create { emitter ->
         oneTapClient.signOut().addOnSuccessListener {
-            authStateListener?.let { auth.removeAuthStateListener(it) }
+            signOutSubject.onNext(Unit)
             auth.signOut()
             emitter.onSuccess(true)
         }.addOnFailureListener {

@@ -11,12 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentAuthBinding
-import com.elizav.mvishopping.ui.auth.state.AuthAction
-import com.elizav.mvishopping.ui.auth.state.AuthReducer
-import com.elizav.mvishopping.ui.auth.state.AuthSideEffects
-import com.elizav.mvishopping.ui.auth.state.AuthState
+import com.elizav.mvishopping.store.authState.AuthAction
+import com.elizav.mvishopping.store.authState.AuthReducer
+import com.elizav.mvishopping.store.authState.AuthSideEffects
+import com.elizav.mvishopping.store.authState.AuthState
 import com.freeletics.rxredux.reduxStore
-import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,8 +26,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AuthFragment : Fragment() {
-    private var _binding: FragmentAuthBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentAuthBinding
 
     private val actions = BehaviorSubject.create<AuthAction>()
     private val compositeDisposable = CompositeDisposable()
@@ -36,30 +34,32 @@ class AuthFragment : Fragment() {
     @Inject
     lateinit var authSideEffects: AuthSideEffects
 
+    @Inject
+    lateinit var authState: AuthState
+
+    @Inject
+    lateinit var authReducer: AuthReducer
+
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            try {
-                it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) }
-                    ?: showSnackbar(getString(R.string.error))
-            } catch (e: ApiException) {
-                showSnackbar(e.message ?: getString(R.string.error))
-            }
+            it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) }
+                ?: showSnackbar(getString(R.string.error))
         }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAuthBinding.inflate(inflater, container, false)
+        binding = FragmentAuthBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         compositeDisposable += actions.reduxStore(
-            AuthState(),
+            authState,
             authSideEffects.sideEffects,
-            AuthReducer()
+            authReducer
         )
             .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
@@ -72,7 +72,6 @@ class AuthFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
         compositeDisposable.clear()
     }
 

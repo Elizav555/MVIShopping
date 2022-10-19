@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.di
+package com.elizav.mvishopping.di.singleton
 
 import com.elizav.mvishopping.data.auth.AuthRepositoryImpl
 import com.elizav.mvishopping.data.client.ClientsRepositoryImpl

@@ -1,8 +1,10 @@
-package com.elizav.mvishopping.di
+package com.elizav.mvishopping.di.singleton
 
 import android.app.Application
 import android.content.Context
 import com.elizav.mvishopping.BuildConfig
+import com.elizav.mvishopping.di.SignInRequest
+import com.elizav.mvishopping.di.SignUpRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.signin.GoogleSignIn

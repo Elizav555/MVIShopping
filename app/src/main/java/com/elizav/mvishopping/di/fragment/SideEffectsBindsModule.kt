@@ -1,12 +1,14 @@
-package com.elizav.mvishopping.di
+package com.elizav.mvishopping.di.fragment
 
-import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
+import com.elizav.mvishopping.di.CartSideEffects
+import com.elizav.mvishopping.di.ProductsListSideEffects
+import com.elizav.mvishopping.store.listState.ListSideEffects
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.FragmentComponent
-import com.elizav.mvishopping.ui.cart.state.CartSideEffects as CartSideEffectsClass
-import com.elizav.mvishopping.ui.products.state.ProductsListSideEffects as ProductsListSideEffectsClass
+import com.elizav.mvishopping.store.cartState.CartSideEffects as CartSideEffectsClass
+import com.elizav.mvishopping.store.productsState.ProductsListSideEffects as ProductsListSideEffectsClass
 
 @Module
 @InstallIn(FragmentComponent::class)

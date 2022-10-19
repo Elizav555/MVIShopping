@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.utils
+package com.elizav.mvishopping.ui.dialog
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog

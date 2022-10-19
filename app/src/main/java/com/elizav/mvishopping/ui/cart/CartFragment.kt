@@ -8,10 +8,10 @@ import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentCartBinding
 import com.elizav.mvishopping.di.CartSideEffects
 import com.elizav.mvishopping.ui.baseList.BaseListFragment
-import com.elizav.mvishopping.ui.baseList.state.ListReducer
-import com.elizav.mvishopping.ui.baseList.state.ListSideEffects
-import com.elizav.mvishopping.ui.utils.DialogParams
-import com.elizav.mvishopping.ui.utils.ShowDialog
+import com.elizav.mvishopping.store.listState.ListReducer
+import com.elizav.mvishopping.store.listState.ListSideEffects
+import com.elizav.mvishopping.ui.dialog.DialogParams
+import com.elizav.mvishopping.ui.dialog.ShowDialog
 import com.freeletics.rxredux.reduxStore
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,8 +20,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CartFragment(clientId: String) : BaseListFragment(clientId) {
-    private var _binding: FragmentCartBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentCartBinding
 
     @Inject
     @CartSideEffects
@@ -34,7 +33,7 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCartBinding.inflate(inflater, container, false)
+        binding = FragmentCartBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -53,7 +52,6 @@ class CartFragment(clientId: String) : BaseListFragment(clientId) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
         compositeDisposable.clear()
     }
 

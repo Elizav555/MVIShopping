@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.baseList.state
+package com.elizav.mvishopping.store.listState
 
 import com.elizav.mvishopping.domain.model.AppException.Companion.DELETE_ERROR_MSG
 import com.elizav.mvishopping.domain.model.AppException.Companion.UPDATE_ERROR_MSG

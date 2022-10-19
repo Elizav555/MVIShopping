@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.listsHost.state
+package com.elizav.mvishopping.store.hostState
 
 import com.freeletics.rxredux.Reducer
 

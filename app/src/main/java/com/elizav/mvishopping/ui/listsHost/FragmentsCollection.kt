@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.utils
+package com.elizav.mvishopping.ui.listsHost
 
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.ui.cart.CartFragment

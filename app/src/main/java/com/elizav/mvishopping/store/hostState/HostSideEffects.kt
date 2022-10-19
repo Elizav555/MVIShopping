@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.listsHost.state
+package com.elizav.mvishopping.store.hostState
 
 import com.elizav.mvishopping.domain.auth.AuthRepository
 import com.elizav.mvishopping.domain.model.AppException.Companion.LOADING_ERROR_MSG
@@ -6,7 +6,6 @@ import com.elizav.mvishopping.domain.model.AppException.Companion.LOGOUT_ERROR_M
 import com.elizav.mvishopping.domain.product.ProductsRepository
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.rxkotlin.ofType
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HostSideEffects @Inject constructor(

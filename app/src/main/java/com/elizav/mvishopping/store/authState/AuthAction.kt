@@ -1,4 +1,4 @@
-package com.elizav.mvishopping.ui.auth.state
+package com.elizav.mvishopping.store.authState
 
 import android.content.Intent
 import com.google.android.gms.auth.api.identity.BeginSignInResult
