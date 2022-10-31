@@ -6,12 +6,14 @@ import com.elizav.mvishopping.domain.model.AppException.Companion.AUTH_ERROR_MSG
 import com.freeletics.rxredux.SideEffect
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.functions.Consumer
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 
 class AuthSideEffects (
     private val authRepository: AuthRepository,
+    private val effectConsumer: Consumer<AuthEffect>
 ) {
     val sideEffects = listOf(
         checkAuthSideEffect(),
@@ -25,12 +27,12 @@ class AuthSideEffects (
                 authRepository.currentClient?.toSingle()
                     ?.toObservable()
                     ?.map<AuthAction> { result ->
-                        AuthAction.SignedInAction(result.uid)
+                        effectConsumer.accept(AuthEffect.NavigateToList(result.uid))
+                        AuthAction.SignedInAction
                     }
                     ?.onErrorReturn { error ->
-                        AuthAction.ErrorAction(
-                            error.message ?: AUTH_ERROR_MSG
-                        )
+                        effectConsumer.accept(AuthEffect.ShowError(error.message ?: AUTH_ERROR_MSG))
+                        AuthAction.ErrorAction
                     }
                     ?: Single.create { emitter -> emitter.onSuccess(AuthAction.LoadedAction) }
                         .toObservable()
@@ -49,9 +51,13 @@ class AuthSideEffects (
             .subscribeOn(Schedulers.io())
             .toObservable()
             .map<AuthAction> { result ->
-                AuthAction.BeginSignInResultAction(result)
+                effectConsumer.accept(AuthEffect.LaunchIntent(result))
+                AuthAction.BeginSignInResultAction
             }
-            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: AUTH_ERROR_MSG) }
+            .onErrorReturn { error ->
+                effectConsumer.accept(AuthEffect.ShowError(error.message ?: AUTH_ERROR_MSG))
+                AuthAction.ErrorAction
+            }
     }
 
     private fun signInWithCredSideEffect(): SideEffect<AuthState, AuthAction> = { actions, state ->
@@ -67,9 +73,13 @@ class AuthSideEffects (
             .subscribeOn(Schedulers.io())
             .toObservable()
             .map<AuthAction> { result ->
-                AuthAction.SignedInAction(clientId = result.uid)
+                effectConsumer.accept(AuthEffect.NavigateToList(result.uid))
+                AuthAction.SignedInAction
             }
-            .onErrorReturn { error -> AuthAction.ErrorAction(error.message ?: AUTH_ERROR_MSG) }
+            .onErrorReturn { error ->
+                effectConsumer.accept(AuthEffect.ShowError(error.message ?: AUTH_ERROR_MSG))
+                AuthAction.ErrorAction
+            }
     }
 }
 

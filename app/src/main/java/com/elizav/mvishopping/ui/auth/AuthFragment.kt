@@ -11,38 +11,37 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.elizav.mvishopping.R
 import com.elizav.mvishopping.databinding.FragmentAuthBinding
+import com.elizav.mvishopping.rx.CacheRelay
 import com.elizav.mvishopping.store.authState.AuthAction
-import com.elizav.mvishopping.store.authState.AuthReducer
-import com.elizav.mvishopping.store.authState.AuthSideEffects
+import com.elizav.mvishopping.store.authState.AuthEffect
+import com.elizav.mvishopping.store.authState.AuthEffect.ShowError
 import com.elizav.mvishopping.store.authState.AuthState
-import com.freeletics.rxredux.reduxStore
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AuthFragment : Fragment() {
     private lateinit var binding: FragmentAuthBinding
 
-    private val actions = BehaviorSubject.create<AuthAction>()
     private val compositeDisposable = CompositeDisposable()
 
     @Inject
-    lateinit var authSideEffects: AuthSideEffects
+    lateinit var statesObservable: Observable<AuthState>
 
     @Inject
-    lateinit var authState: AuthState
+    lateinit var actionsRelay: CacheRelay<AuthAction>
 
     @Inject
-    lateinit var authReducer: AuthReducer
+    lateinit var effects: CacheRelay<AuthEffect>
 
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            it.data?.let { data -> actions.onNext(AuthAction.SignInWithCredAction(data)) }
+            it.data?.let { data -> actionsRelay.accept(AuthAction.SignInWithCredAction(data)) }
                 ?: showSnackbar(getString(R.string.error))
         }
 
@@ -56,17 +55,15 @@ class AuthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        compositeDisposable += actions.reduxStore(
-            authState,
-            authSideEffects.sideEffects,
-            authReducer
-        )
-            .distinctUntilChanged()
+        compositeDisposable += statesObservable
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state -> render(state) }
-        actions.onNext(AuthAction.CheckAuthAction)
+        compositeDisposable += effects
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { effect -> handleEffect(effect) }
+        actionsRelay.accept(AuthAction.CheckAuthAction)
         binding.btnSignIn.setOnClickListener {
-            actions.onNext(AuthAction.SignInAction)
+            actionsRelay.accept(AuthAction.SignInAction)
         }
     }
 
@@ -75,23 +72,19 @@ class AuthFragment : Fragment() {
         compositeDisposable.clear()
     }
 
-    private fun render(
-        state: AuthState
-    ) {
+    private fun render(state: AuthState) {
         showLoading(state.isLoading)
-        when {
-            state.currentClientId != null -> {
-                navigateToList(state.currentClientId)
-            }
-            state.errorMsg != null -> {
-                showLoading(false)
-                showSnackbar(state.errorMsg)
-            }
-            state.beginSignInResult != null -> {
+    }
+
+    private fun handleEffect(effect: AuthEffect) {
+        when (effect) {
+            is ShowError -> showSnackbar(effect.text)
+            is AuthEffect.LaunchIntent -> {
                 launcher.launch(
-                    IntentSenderRequest.Builder(state.beginSignInResult.pendingIntent).build()
+                    IntentSenderRequest.Builder(effect.signInResult.pendingIntent).build()
                 )
             }
+            is AuthEffect.NavigateToList -> navigateToList(effect.clientId)
         }
     }
 

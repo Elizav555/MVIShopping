@@ -69,6 +69,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.0.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.0'
+    implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.1'
 
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
     implementation 'androidx.core:core-ktx:1.9.0'

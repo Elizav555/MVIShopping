@@ -7,38 +7,25 @@ class AuthReducer : Reducer<AuthState, AuthAction> {
     override fun invoke(state: AuthState, action: AuthAction): AuthState =
         when (action) {
             is AuthAction.BeginSignInResultAction -> state.copy(
-                beginSignInResult = action.result,
-                isLoading = true,
-                errorMsg = null
+                isLoading = true
             )
             is AuthAction.ErrorAction -> state.copy(
-                errorMsg = action.errorMsg,
                 isLoading = false,
-                beginSignInResult = null
             )
             AuthAction.SignInAction -> state.copy(
                 isLoading = true
             )
             is AuthAction.SignedInAction -> state.copy(
-                currentClientId = action.clientId,
-                isLoading = true,
-                errorMsg = null,
-                beginSignInResult = null
+                isLoading = true
             )
             is AuthAction.SignInWithCredAction -> state.copy(
-                isLoading = true,
-                errorMsg = null,
-                beginSignInResult = null
+                isLoading = true
             )
             AuthAction.CheckAuthAction -> state.copy(
-                isLoading = true,
-                errorMsg = null,
-                beginSignInResult = null
+                isLoading = true
             )
             AuthAction.LoadedAction -> state.copy(
-                isLoading = false,
-                errorMsg = null,
-                beginSignInResult = null
+                isLoading = false
             )
         }
 }
